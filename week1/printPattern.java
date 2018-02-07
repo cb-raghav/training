@@ -32,6 +32,7 @@ public class printPattern {
 		Scanner s = new Scanner(System.in);
 		System.out.print("Enter the number of lines: ");
 		int n = s.nextInt();
+		System.out.println("The pattern upto " + n + " lines is: ");
 		print(n);
 	}
 }
