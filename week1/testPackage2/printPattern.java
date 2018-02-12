@@ -1,3 +1,5 @@
+package testPackage2;
+
 import java.util.*;
 
 public class printPattern {
