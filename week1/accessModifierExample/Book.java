@@ -108,13 +108,14 @@ public class Book {
 			System.out.print("\nEnter your option: "); opt = s.nextInt();
 			switch(opt) {
 				case 1: {
-					System.out.print("Enter the book nunber (1 - " + numBooks + ") : ");
+					System.out.print("Enter the book number (1 - " + numBooks + ") : ");
 					int bookNumber = s.nextInt();
+					System.out.println("Details of the book - \n" + bookList[bookNumber - 1].toDisplay());
 					bookList[bookNumber - 1].addAuthor();
 				}
 				break;
 				case 2: {
-					System.out.print("Enter the book nunber (1 - " + numBooks + ") : ");
+					System.out.print("Enter the book number (1 - " + numBooks + ") : ");
 					int bookNumber = s.nextInt();
 					bookList[bookNumber - 1].printAuthors();
 				}
