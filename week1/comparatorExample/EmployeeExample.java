@@ -7,7 +7,8 @@ public class EmployeeExample {
 		Scanner s = new Scanner(System.in);
 		s.useDelimiter("\n");
 		int numEmployees = 3;
-		Employee[] empList = new Employee[numEmployees];
+		Employee[] empList = new Employee[numEmployees]; // Initialize the list of employees as an array of 'Employee' objects
+
 		for(int i = 0; i < numEmployees; i++) {
 			String name; double salary; int age;
 			System.out.print("\nEnter employee " + (int)(i + 1) + "'s name: ");
@@ -20,7 +21,7 @@ public class EmployeeExample {
 		}
 
 		int opt = 0;
-		do {
+		do { // Display menu options and perform the corresponding action until user chooses to exit
 			System.out.println("\n1. Sort by name");
 			System.out.println("2. Sort by age");
 			System.out.println("3. Sort by salary");
@@ -28,26 +29,26 @@ public class EmployeeExample {
 			System.out.print("Enter your choice: "); 
 			opt = s.nextInt();
 			switch(opt) {
-				case 1: {
-					Arrays.sort(empList, new Comparator<Employee>() {
+				case 1: { // Sort by employee name
+					Arrays.sort(empList, new Comparator<Employee>() { // Anonymous inner class implementation of the Comparator interface
 						public int compare(Employee e1, Employee e2) {
-            				return (e1.getName()).compareTo(e2.getName());
+            				return (e1.getName()).compareTo(e2.getName()); // sort by employee name
         				}
 					});
 				}
 				break;
 				case 2: {
-					Arrays.sort(empList, new Comparator<Employee>() {
+					Arrays.sort(empList, new Comparator<Employee>() { // Anonymous inner class implementation of the Comparator interface
 						public int compare(Employee e1, Employee e2) {
-            				return (e1.getAge() - e2.getAge());
+            				return (e1.getAge() - e2.getAge()); // sort by employee age
         				}
 					});
 				}
 				break;
 				case 3: {
-					Arrays.sort(empList, new Comparator<Employee>() {
+					Arrays.sort(empList, new Comparator<Employee>() { // Anonymous inner class implementation of the Comparator interface
 						public int compare(Employee e1, Employee e2) {
-            				return (int)(e1.getSalary() - e2.getSalary());
+            				return (int)(e1.getSalary() - e2.getSalary()); // sort by employee salary
         				}
 					});
 				}
@@ -55,7 +56,7 @@ public class EmployeeExample {
 			}
 			if(opt != 0) {
 				System.out.print("\n");
-				for(int i = 0; i < numEmployees; i++) {
+				for(int i = 0; i < numEmployees; i++) { // Display the sorted array of Employee objects
 					System.out.print(empList[i].toString());
 					if(i != numEmployees - 1) {
 						System.out.print(",");

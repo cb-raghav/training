@@ -4,11 +4,13 @@ public class Sedan extends Car {
 	int length;
 
 	Sedan(int speed, double regularPrice, String colour, int length) {
+		// Parameterized constructor
 		super(speed, regularPrice, colour);
 		this.length = length;
 	}
 
-	public double getSalePrice() {
+	public double getSalePrice() { // implementation the abstract method
+		// compute discount based on the sedan's length
 		if(length > 50) {
 			return (0.95 * regularPrice);
 		}

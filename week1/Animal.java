@@ -1,22 +1,24 @@
 import java.util.*;
 
 public class Animal {
-	String name; String colour; 
+	// Member variables
+	String name; 
+	String colour; 
 	int age; 
-	static int count = 0;
+	static int count = 0; // static variable to keep track of the number of 'Animal' objects created
 
-	Animal() {
-		count++;
+	Animal() { // Default construtor called whenever an object is created
+		count++; // Increment the count of objects
 	}
 
-	public void dispData() {
+	public void dispData() { // Display the details of the animal
 		System.out.println("\nName: " + name);
 		System.out.println("Colour: " + colour);
 		System.out.println("Age: " + age + "\n");
 		System.out.println("Number of animals created: " + count + "\n");
 	}
 
-	public void acceptData() {
+	public void acceptData() { // Accept the details of the animal
 		Scanner s = new Scanner(System.in);
 		System.out.print("Enter the animal's name: ");
 		name = s.next();
@@ -27,7 +29,7 @@ public class Animal {
 	}
 
 	public static void main(String[] args) {
-		while(true) {
+		while(true) { // Keep accepting input from the user
 			Animal a = new Animal();
 			a.acceptData();
 			a.dispData();

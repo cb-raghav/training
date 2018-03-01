@@ -3,6 +3,10 @@ package staticExample;
 import java.util.*;
 
 public class ResultGenerator {
+	/*
+		Prints the report card of a given student
+		Parameters: 'student' (Student object)
+	*/
 	public static void generateResult(Student student) {
 		float total = 0, average = 0;
 		Subject s = student.getSubjects(); 

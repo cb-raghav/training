@@ -5,12 +5,14 @@ public class Author {
 	private String name; 
 	private String email;
 	private char gender;
-	Author(String name, String email, char gender) {
+
+	Author(String name, String email, char gender) { // parameterized constructor
 		this.name = name;
 		this.email = email;
 		this.gender = gender;
 	}
 
+	// Getter functions for data members
 	public String getName() {
 		return name;
 	}
@@ -23,10 +25,12 @@ public class Author {
 		return gender;
 	}
 
+	// Setter function for 'email'
 	public void setEmail(String newEmail) {
 		email = newEmail;
 	}
 
+	// Returns a formatted String describing the author
 	public String toDisplay() {
 		return String.format("%s (%s) at %s", name, gender, email);
 	}

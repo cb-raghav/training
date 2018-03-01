@@ -3,12 +3,13 @@ package inheritanceExample;
 public class Truck extends Car {
 	int weight; 
 	
-	Truck(int speed, double regularPrice, String colour, int weight) {
+	Truck(int speed, double regularPrice, String colour, int weight) { // parameterized constructor
 		super(speed, regularPrice, colour);
 		this.weight = weight;
 	}
 
-	public double getSalePrice() {
+	public double getSalePrice() { // implementation of abstract method
+		// compute discount based on the truck's weight
 		if(weight > 2000) {
 			return (0.9 * regularPrice);
 		}

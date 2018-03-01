@@ -13,9 +13,9 @@ public class StudentDemo {
 
 	public static void main(String[] args) {
 		StudentDemo sd = new StudentDemo();
-		Student s = new Student();
-		sd.storeStudentData(s);
-		ResultGenerator.generateResult(s);
+		Student s = new Student(); 
+		sd.storeStudentData(s); // initialize a Student object 's' wusing input from the user
+		ResultGenerator.generateResult(s); // generate the report card of the student 's'
 	}
 	
 }
