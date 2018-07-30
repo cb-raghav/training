@@ -1,0 +1,219 @@
+mysql> ALTER TABLE students ADD created_at DATETIME;
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE students ADD updated_at DATETIME;
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE marks ADD created_at DATETIME;
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE marks ADD updated_at DATETIME;
+Query OK, 0 rows affected (0.06 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE medals ADD updated_at DATETIME;
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE medals ADD created_at DATETIME;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+UPDATE marks SET quarterly = 0 WHERE quarterly IS NULL;
+UPDATE marks SET half_yearly = 0 WHERE half_yearly IS NULL;
+UPDATE marks SET annual = 0 WHERE annual IS NULL;
+
+ALTER TABLE marks MODIFY COLUMN quarterly int NOT NULL;
+ALTER TABLE marks MODIFY COLUMN half_yearly int NOT NULL;
+ALTER TABLE marks MODIFY COLUMN annual int NOT NULL;
+
+UPDATE students SET created_at = '2018-07-07 16:00:00', updated_at = '2018-07-07 16:00:00';
+UPDATE marks SET created_at = '2018-07-07 16:00:00', updated_at = '2018-07-07 16:00:00';
+UPDATE medals SET created_at = '2018-07-07 16:00:00', updated_at = '2018-07-07 16:00:00';
+
+INSERT INTO medals VALUES(114, 100002, 3, 'silver', 2005, 8, NOW(), NOW());
+
+UPDATE medals
+SET medal_won = 'gold', updated_at = NOW()
+WHERE id = 114;
+
+CREATE TABLE students_summary (
+	student_id bigint,
+    student_name varchar(100),
+    year int,
+    annual_percentage double,
+    no_of_medals_received int,
+    CONSTRAINT pk_summary PRIMARY KEY (student_id, student_name, year)
+);
+
+INSERT INTO students_summary
+	SELECT student_id, name AS student_name, year AS study_year, 
+	(SUM(IFNULL(annual, 0)) / 5) AS annual_percentage, 
+	IFNULL( ( 
+		SELECT COUNT(medal_won) FROM students LEFT JOIN medals ON students.id = medals.student_id 
+		WHERE name = student_name AND year = study_year 
+		GROUP BY name, year 
+	), 0) AS no_of_medals_received 
+	FROM students INNER JOIN marks ON students.id = marks.student_id
+	GROUP BY student_name, study_year
+
+(or)
+
+CREATE TABLE students_summary AS (
+    SELECT student_id, name AS student_name, year AS study_year, 
+    (SUM(IFNULL(annual, 0)) / 5) AS annual_percentage, 
+    IFNULL( ( 
+    	SELECT COUNT(medal_won) FROM students LEFT JOIN medals ON students.id = medals.student_id 
+    	WHERE name = student_name AND year = study_year 
+    	GROUP BY name, year 
+    ), 0) AS no_of_medals_received 
+	FROM students INNER JOIN marks ON students.id = marks.student_id
+	GROUP BY student_name, study_year
+);
+
+SELECT * FROM students_summary;
++------------+--------------+------+-------------------+-----------------------+
+| student_id | student_name | year | annual_percentage | no_of_medals_received |
++------------+--------------+------+-------------------+-----------------------+
+|     100001 | Thor         | 2003 |              84.8 |                     1 |
+|     100001 | Thor         | 2004 |              61.8 |                     0 |
+|     100001 | Thor         | 2005 |                75 |                     3 |
+|     100001 | Thor         | 2006 |              59.2 |                     0 |
+|     100001 | Thor         | 2007 |              42.4 |                     0 |
+|     100002 | Hulk         | 2003 |              59.2 |                     1 |
+|     100002 | Hulk         | 2004 |              92.6 |                     3 |
+|     100002 | Hulk         | 2005 |                59 |                     1 |
+|     100002 | Hulk         | 2006 |              43.6 |                     0 |
+|     100002 | Hulk         | 2007 |              85.8 |                     0 |
+|     100003 | Daredevil    | 2003 |                93 |                     2 |
+|     100003 | Daredevil    | 2004 |              63.8 |                     2 |
+|     100003 | Daredevil    | 2005 |                77 |                     1 |
+|     100003 | Daredevil    | 2006 |              63.6 |                     0 |
+|     100003 | Daredevil    | 2007 |              61.2 |                     0 |
+|     100004 | X Man        | 2003 |              52.2 |                     0 |
+|     100004 | X Man        | 2004 |              61.4 |                     0 |
+|     100004 | X Man        | 2005 |              62.4 |                     0 |
+|     100004 | X Man        | 2006 |              57.4 |                     0 |
+|     100004 | X Man        | 2007 |              70.8 |                     0 |
+|     100005 | Ironman      | 2003 |              64.6 |                     0 |
+|     100005 | Ironman      | 2004 |              57.4 |                     0 |
+|     100005 | Ironman      | 2005 |              57.4 |                     0 |
+|     100005 | Ironman      | 2006 |                64 |                     0 |
+|     100005 | Ironman      | 2007 |              82.4 |                     0 |
++------------+--------------+------+-------------------+-----------------------+
+25 rows in set (0.01 sec)
+
+-----------------------------------------------------------------------------------------------------------------------
+Triggers:
+
+ALTER TABLE marks 
+ADD COLUMN average double;
+
+ALTER TABLE marks
+MODIFY average double AFTER annual;
+
+UPDATE marks SET average = ((quarterly + half_yearly + annual) / 3);
+
+mysql> DELIMITER //
+mysql> CREATE TRIGGER average_insert BEFORE INSERT ON marks
+    -> FOR EACH ROW 
+    -> BEGIN
+    -> IF NEW.quarterly IS NOT NULL AND NEW.half_yearly IS NOT NULL AND NEW.annual IS NOT NULL THEN
+    -> SET NEW.average = (NEW.quarterly + NEW.half_yearly + NEW.annual) / 3;
+    -> END IF;
+    -> END;//
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> DELIMITER //
+mysql> CREATE TRIGGER average_update BEFORE UPDATE ON marks
+    -> FOR EACH ROW
+    -> BEGIN
+    -> IF NEW.quarterly <> OLD.quarterly OR NEW.half_yearly <> OLD.half_yearly OR NEW.annual <> OLD.annual THEN
+    -> SET NEW.average = (NEW.quarterly + NEW.half_yearly + NEW.annual) / 3;
+    -> END IF;
+    -> END;//
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> DELIMITER //
+mysql> CREATE TRIGGER copy_insert BEFORE INSERT ON medals
+    -> FOR EACH ROW
+    -> BEGIN
+    -> IF NEW.medal_won IS NOT NULL THEN
+    -> SET NEW.medal_received = NEW.medal_won;
+    -> END IF;
+    -> IF NEW.medal_received IS NOT NULL THEN
+    -> SET NEW.medal_won = NEW.medal_received;
+    -> END IF;
+    -> END;//
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> INSERT INTO medals(id, student_id, game_id, medal_won, year, grade, updated_at, created_at)
+    -> VALUES(118, 100003, 3, 'gold', 2005, 8, NOW(), NOW());
+    -> //
+Query OK, 1 row affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql> SELECT * FROM medals;
++-----+------------+---------+-----------+------+-------+---------------------+---------------------+----------------+
+| id  | student_id | game_id | medal_won | year | grade | updated_at          | created_at          | medal_received |
++-----+------------+---------+-----------+------+-------+---------------------+---------------------+----------------+
+| 101 |     100003 |       5 | gold      | 2003 |     6 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 102 |     100001 |       5 | silver    | 2003 |     6 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 103 |     100002 |       4 | silver    | 2003 |     6 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 104 |     100003 |       1 | gold      | 2003 |     6 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 105 |     100003 |       3 | bronze    | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 106 |     100003 |       4 | silver    | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 107 |     100002 |       2 | silver    | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 108 |     100002 |       4 | bronze    | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 109 |     100002 |       5 | gold      | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 110 |     100003 |       3 | bronze    | 2005 |     8 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 111 |     100001 |       2 | gold      | 2005 |     8 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 112 |     100001 |       3 | bronze    | 2005 |     8 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 113 |     100001 |       4 | bronze    | 2005 |     8 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 114 |     100002 |       3 | gold      | 2005 |     8 | 2018-07-12 00:50:31 | 2018-07-12 00:47:02 | NULL           |
+| 115 |     100003 |       0 | silver    | 2005 |     8 | 2018-07-12 02:25:39 | 2018-07-12 02:25:39 | NULL           |
+| 118 |     100003 |       3 | gold      | 2005 |     8 | 2018-07-12 03:13:47 | 2018-07-12 03:13:47 | gold           |
++-----+------------+---------+-----------+------+-------+---------------------+---------------------+----------------+
+
+mysql> INSERT INTO medals(id, student_id, game_id, year, grade, updated_at, created_at, medal_received)
+    -> VALUES(119, 100002, 4, 2005, 8, NOW(), NOW(), 'silver');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM medals;
++-----+------------+---------+-----------+------+-------+---------------------+---------------------+----------------+
+| id  | student_id | game_id | medal_won | year | grade | updated_at          | created_at          | medal_received |
++-----+------------+---------+-----------+------+-------+---------------------+---------------------+----------------+
+| 101 |     100003 |       5 | gold      | 2003 |     6 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 102 |     100001 |       5 | silver    | 2003 |     6 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 103 |     100002 |       4 | silver    | 2003 |     6 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 104 |     100003 |       1 | gold      | 2003 |     6 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 105 |     100003 |       3 | bronze    | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 106 |     100003 |       4 | silver    | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 107 |     100002 |       2 | silver    | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 108 |     100002 |       4 | bronze    | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 109 |     100002 |       5 | gold      | 2004 |     7 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 110 |     100003 |       3 | bronze    | 2005 |     8 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 111 |     100001 |       2 | gold      | 2005 |     8 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 112 |     100001 |       3 | bronze    | 2005 |     8 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 113 |     100001 |       4 | bronze    | 2005 |     8 | 2018-07-07 16:00:00 | 2018-07-07 16:00:00 | NULL           |
+| 114 |     100002 |       3 | gold      | 2005 |     8 | 2018-07-12 00:50:31 | 2018-07-12 00:47:02 | NULL           |
+| 115 |     100003 |       0 | silver    | 2005 |     8 | 2018-07-12 02:25:39 | 2018-07-12 02:25:39 | NULL           |
+| 118 |     100003 |       3 | gold      | 2005 |     8 | 2018-07-12 03:13:47 | 2018-07-12 03:13:47 | gold           |
+| 119 |     100002 |       4 | silver    | 2005 |     8 | 2018-07-12 03:16:21 | 2018-07-12 03:16:21 | silver         |
++-----+------------+---------+-----------+------+-------+---------------------+---------------------+----------------+
+
+mysql> DELIMITER //
+mysql> CREATE TRIGGER copy_update BEFORE UPDATE ON medals
+    -> FOR EACH ROW
+    -> BEGIN
+    -> IF NEW.medal_received <> OLD.medal_received THEN 
+    -> SET NEW.medal_won = NEW.medal_received;
+    -> END IF;
+    -> IF NEW.medal_won <> OLD.medal_won THEN
+    -> SET NEW.medal_received = NEW.medal_won;
+    -> END IF;
+    -> END;//
+Query OK, 0 rows affected (0.04 sec)

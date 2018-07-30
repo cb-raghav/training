@@ -1,0 +1,227 @@
+mysql> CREATE TABLE Users (
+    -> UserID int,
+    -> LoginID varchar(50),
+    -> Password varchar(50),
+    -> PRIMARY KEY (UserID)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE Trains (
+    -> TrainNo int,
+    -> TrainName varchar(30)
+    -> ,
+    -> PRIMARY KEY (TrainNo)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE Stations (
+    -> StationID int,
+    -> StationCode varchar(5),
+    -> PRIMARY KEY (StationID)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE Routes (
+    -> RouteID int,
+    -> OriginStation int,
+    -> DestinationStation int,
+    -> DistanceInKms int,
+    -> PRIMARY KEY (RouteID),
+    -> FOREIGN KEY (OriginStation) REFERENCES Stations(StationID),
+    -> FOREIGN KEY (DestinationStation) REFERENCES Stations(StationID)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE TrainRouteMaps (
+    -> RouteID int,
+    -> TrainNo int,
+    -> ArrivalTime TIME,
+    -> DepartureTime TIME,
+    -> DurationInMins int,
+    -> CONSTRAINT PK_TRM PRIMARY KEY (RouteID, TrainNo),
+    -> FOREIGN KEY (RouteID) REFERENCES Routes(RouteID),
+    -> FOREIGN KEY (TrainNo) REFERENCES Trains(TrainNo)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE TrainCoaches (
+    -> TrainNo int,
+    -> CoachCode varchar(5),
+    -> NoOfSeats int
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE Coaches (
+    -> CoachCode varchar(5),
+    -> CostPerKm int,
+    -> PRIMARY KEY (CoachCode)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> ALTER TABLE TrainCoaches 
+    -> ADD FOREIGN KEY (CoachCode) REFERENCES Coaches(CoachCode),
+    -> ADD FOREIGN KEY (TrainNo) REFERENCES Trains(TrainNo);
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESCRIBE TrainCoaches;
++-----------+------------+------+-----+---------+-------+
+| Field     | Type       | Null | Key | Default | Extra |
++-----------+------------+------+-----+---------+-------+
+| TrainNo   | int(11)    | YES  | MUL | NULL    |       |
+| CoachCode | varchar(5) | YES  | MUL | NULL    |       |
+| NoOfSeats | int(11)    | YES  |     | NULL    |       |
++-----------+------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> DESCRIBE Coaches;
++-----------+------------+------+-----+---------+-------+
+| Field     | Type       | Null | Key | Default | Extra |
++-----------+------------+------+-----+---------+-------+
+| CoachCode | varchar(5) | NO   | PRI |         |       |
+| CostPerKm | int(11)    | YES  |     | NULL    |       |
++-----------+------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> CREATE TABLE Bookings (
+    -> BookingRefNo int,
+    -> RouteID int,
+    -> TrainNo int,
+    -> CoachCode varchar(5),
+    -> DateOfJourney DATE,
+    -> DateOfBooking DATE,
+    -> NoOfTickets int,
+    -> PRIMARY KEY (BookingRefNo),
+    -> FOREIGN KEY (RouteID, TrainNo) REFERENCES TrainRouteMaps(RouteID, TrainNo),
+    -> FOREIGN KEY (CoachCode) REFERENCES Coaches(CoachCode)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> DESCRIBE Bookings;
++---------------+------------+------+-----+---------+-------+
+| Field         | Type       | Null | Key | Default | Extra |
++---------------+------------+------+-----+---------+-------+
+| BookingRefNo  | int(11)    | NO   | PRI | 0       |       |
+| RouteID       | int(11)    | YES  | MUL | NULL    |       |
+| TrainNo       | int(11)    | YES  |     | NULL    |       |
+| CoachCode     | varchar(5) | YES  | MUL | NULL    |       |
+| DateOfJourney | date       | YES  |     | NULL    |       |
+| DateOfBooking | date       | YES  |     | NULL    |       |
+| NoOfTickets   | int(11)    | YES  |     | NULL    |       |
++---------------+------------+------+-----+---------+-------+
+7 rows in set (0.01 sec)
+
+mysql> LIST TABLES;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'LIST TABLES' at line 1
+mysql> SHOW TABLES;
++-------------------------------+
+| Tables_in_railway_reservation |
++-------------------------------+
+| Bookings                      |
+| Coaches                       |
+| Routes                        |
+| Stations                      |
+| TrainCoaches                  |
+| TrainRouteMaps                |
+| Trains                        |
+| Users                         |
++-------------------------------+
+8 rows in set (0.00 sec)
+
+mysql> INSERT INTO Users VALUES (1001, 'Leno', 'Len1'), (1002, 'Sokratis', 'Sok2'), (1003, 'Torreira', 'Torr3');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Trains VALUES (101, 'Brindavan Express'), (102, 'Shatabdi Express'), (103, 'Rockfort Express'), (104, 'Guruvayur Express');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Stations VALUES (201, 'BNC'), (202, 'MAS'), (203, 'TRIV'), (204, 'DEL'), (205, 'KOLK'), (206, 'MUM'), (207, 'JAI');
+Query OK, 7 rows affected (0.01 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Routes VALUES (301, 202, 203, 1000), (302, 202, 201, 700), (303, 204, 202, 3000), (304, 205, 202, 1500), (305, 201, 206, 500), (306, 206, 207, 1000), (307, 206, 204, 1300), (308, 205, 206, 1700);
+Query OK, 8 rows affected (0.02 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Coaches VALUES ('1A', 10), ('2A', 8), ('2S', 2), ('CC', 6), ('SL', 4);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Trains VALUES (105, 'Howrah Mail'), (106, 'North-South Express'), (107, 'Taj Mahal Express'), (108, 'East-West Express'), (109, 'Capital Mail');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Routes VALUES (309, 204, 205, 1400);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO TrainRouteMaps VALUES (301, 104, '06:30:00', '06:45:00', 240), (302, 101, '10:00:00', '10:20:00', 200), (303, 106, '13:45:00', '14:10:00', 540);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainRouteMaps VALUES (304, 105, '03:30:00', '03:45:00', 180), (305, 102, '21:30:00', '21:40:00', 170), (306, 103, '16:25:00', '16:50:00', 250);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainRouteMaps VALUES (307, 107, '12:10:00', '12:30:00', 270), (308, 108, '23:00:00', '23:20:00', 375), (309, 109, '19:30:00', '19:45:00', 330);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainCoaches VALUES (101, '1A', 100), (101, 'CC', 250), (101, '2S', 150);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainCoaches VALUES (102, '2A', 300), (102, 'SL', 300), (102, 'SL', 200), (102, 'CC', 250);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainCoaches VALUES (103, '1A', 100), (103, 'SL', 250), (103, '2S', 200);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainCoaches VALUES (104, '2A', 180), (104, 'SL', 120), (104, 'CC', 230);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainCoaches VALUES (105, '2S', 300), (105, 'CC', 220), (105, '2A', 270);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainCoaches VALUES (106, 'CC', 240), (106, '1A', 100), (106, '1A', 150), (106, '2S', 180);
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainCoaches VALUES (107, '2A', 150), (107, 'SL', 200), (107, 'CC', 140);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainCoaches VALUES (108, '2S', 210), (108, '2S', 90), (108, '1A', 75);
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TrainCoaches VALUES (109, 'SL', 120), (109, '2S', 175), (109, '2A', 120);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Bookings VALUES (2001, 302, 101, 'CC', '2018-07-20', '2018-07-11');
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> INSERT INTO Bookings VALUES (2001, 302, 101, 'CC', '2018-07-20', '2018-07-11', 2);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO Bookings VALUES (2001, 302, 101, 'CC', '2018-07-20', '2018-07-11', 2);
+ERROR 1062 (23000): Duplicate entry '2001' for key 'PRIMARY'
+
+mysql> INSERT INTO Bookings VALUES (2002, 305, 999, 'CC', '2018-07-20', '2018-07-11', 2);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`railway_reservation`.`bookings`, CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`RouteID`, `TrainNo`) REFERENCES `TrainRouteMaps` (`RouteID`, `TrainNo`))
+
+mysql> INSERT INTO Bookings VALUES (2002, 305, 102, 'SL', '2017-08-11', '2017-07-22', 3);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO Bookings VALUES (2003, 308, 108, '1A', '2014-03-08', '2014-02-28', 1);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO Bookings VALUES (2005, 303, 106, '2S', '2015-05-21', '2015-05-19', 2);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO Bookings VALUES (2004, 303, 106, 'CC', '2016-09-14', '2016-09-7', 4);
+Query OK, 1 row affected (0.01 sec)

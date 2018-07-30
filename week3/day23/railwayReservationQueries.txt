@@ -1,0 +1,301 @@
+(1) SELECT * FROM Trains;
++---------+---------------------+
+| TrainNo | TrainName           |
++---------+---------------------+
+|     101 | Brindavan Express   |
+|     102 | Shatabdi Express    |
+|     103 | Rockfort Express    |
+|     104 | Guruvayur Express   |
+|     105 | Howrah Mail         |
+|     106 | North-South Express |
+|     107 | Taj Mahal Express   |
+|     108 | East-West Express   |
+|     109 | Capital Mail        |
++---------+---------------------+
+9 rows in set (0.00 sec)
+
+(2) SELECT TRM.RouteID AS RouteID, TrainName,
+    (SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) AS Origin,
+   	(SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) AS Destination,
+    ArrivalTime, DepartureTime, DistanceInKms, DurationInMins
+    FROM Trains T INNER JOIN TrainRouteMaps TRM INNER JOIN Routes R ON T.TrainNo = TRM.TrainNo AND TRM.RouteID = R.RouteID
+    ORDER BY RouteID;
+
++---------+---------------------+--------+-------------+-------------+---------------+---------------+----------------+
+| RouteID | TrainName           | Origin | Destination | ArrivalTime | DepartureTime | DistanceInKms | DurationInMins |
++---------+---------------------+--------+-------------+-------------+---------------+---------------+----------------+
+|     301 | Guruvayur Express   | MAS    | TRIV        | 06:30:00    | 06:45:00      |          1000 |            240 |
+|     302 | Brindavan Express   | MAS    | BNC         | 10:00:00    | 10:20:00      |           700 |            200 |
+|     303 | North-South Express | DEL    | MAS         | 13:45:00    | 14:10:00      |          3000 |            540 |
+|     304 | Howrah Mail         | KOLK   | MAS         | 03:30:00    | 03:45:00      |          1500 |            180 |
+|     305 | Shatabdi Express    | BNC    | MUM         | 21:30:00    | 21:40:00      |           500 |            170 |
+|     306 | Rockfort Express    | MUM    | JAI         | 16:25:00    | 16:50:00      |          1000 |            250 |
+|     307 | Taj Mahal Express   | MUM    | DEL         | 12:10:00    | 12:30:00      |          1300 |            270 |
+|     308 | East-West Express   | KOLK   | MUM         | 23:00:00    | 23:20:00      |          1700 |            375 |
+|     309 | Capital Mail        | DEL    | KOLK        | 19:30:00    | 19:45:00      |          1400 |            330 |
++---------+---------------------+--------+-------------+-------------+---------------+---------------+----------------+
+9 rows in set (0.00 sec)
+
+(3) SELECT TrainName, SUM(NoOfSeats) AS TotalSeats
+    FROM Trains INNER JOIN TrainCoaches ON Trains.TrainNo = TrainCoaches.TrainNo
+    GROUP BY TrainName;
++---------------------+------------+
+| TrainName           | TotalSeats |
++---------------------+------------+
+| Brindavan Express   |        500 |
+| Capital Mail        |        415 |
+| East-West Express   |        375 |
+| Guruvayur Express   |        530 |
+| Howrah Mail         |        790 |
+| North-South Express |        670 |
+| Rockfort Express    |        550 |
+| Shatabdi Express    |       1050 |
+| Taj Mahal Express   |        490 |
++---------------------+------------+
+9 rows in set (0.00 sec)
+
+
+(4) SELECT * FROM (
+		SELECT TRM.RouteID AS RouteID, TrainName,
+	    (SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) AS Origin,
+	    (SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) AS Destination,
+	    ArrivalTime, DepartureTime, DistanceInKms, DurationInMins
+	    FROM Trains T INNER JOIN TrainRouteMaps TRM INNER JOIN Routes R ON T.TrainNo = TRM.TrainNo AND TRM.RouteID = R.RouteID
+    ) R
+    WHERE Destination = 'BNC';
++---------+-------------------+--------+-------------+-------------+---------------+---------------+----------------+
+| RouteID | TrainName         | Origin | Destination | ArrivalTime | DepartureTime | DistanceInKms | DurationInMins |
++---------+-------------------+--------+-------------+-------------+---------------+---------------+----------------+
+|     302 | Brindavan Express | MAS    | BNC         | 10:00:00    | 10:20:00      |           700 |            200 |
++---------+-------------------+--------+-------------+-------------+---------------+---------------+----------------+
+1 row in set (0.00 sec)
+
+(5) SELECT * FROM (
+		SELECT TRM.RouteID AS RouteID, TrainName,
+	    (SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) AS Origin,
+	    (SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) AS Destination,
+	    ArrivalTime, DepartureTime, DistanceInKms, DurationInMins
+	    FROM Trains T INNER JOIN TrainRouteMaps TRM INNER JOIN Routes R ON T.TrainNo = TRM.TrainNo AND TRM.RouteID = R.RouteID
+    ) R
+    WHERE Origin IN ('BNC', 'MAS', 'KOLK');
+
++---------+-------------------+--------+-------------+-------------+---------------+---------------+----------------+
+| RouteID | TrainName         | Origin | Destination | ArrivalTime | DepartureTime | DistanceInKms | DurationInMins |
++---------+-------------------+--------+-------------+-------------+---------------+---------------+----------------+
+|     302 | Brindavan Express | MAS    | BNC         | 10:00:00    | 10:20:00      |           700 |            200 |
+|     305 | Shatabdi Express  | BNC    | MUM         | 21:30:00    | 21:40:00      |           500 |            170 |
+|     301 | Guruvayur Express | MAS    | TRIV        | 06:30:00    | 06:45:00      |          1000 |            240 |
+|     304 | Howrah Mail       | KOLK   | MAS         | 03:30:00    | 03:45:00      |          1500 |            180 |
+|     308 | East-West Express | KOLK   | MUM         | 23:00:00    | 23:20:00      |          1700 |            375 |
++---------+-------------------+--------+-------------+-------------+---------------+---------------+----------------+
+
+(6) SELECT BookingRefNo,
+    R.RouteID,
+    TrainName,
+    (SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) AS Origin,
+    (SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) AS Destination,
+    CoachCode, DateOfJourney, DateOfBooking, NoOfTickets
+    FROM Trains T INNER JOIN Bookings B INNER JOIN Routes R ON T.TrainNo = B.TrainNo AND B.RouteID = R.RouteID
+    WHERE DateOfBooking BETWEEN 2015-01-01 AND 2015-12-31;
+
++--------------+---------+---------------------+--------+-------------+-----------+---------------+---------------+-------------+
+| BookingRefNo | RouteID | TrainName           | Origin | Destination | CoachCode | DateOfJourney | DateOfBooking | NoOfTickets |
++--------------+---------+---------------------+--------+-------------+-----------+---------------+---------------+-------------+
+|         2005 |     303 | North-South Express | DEL    | MAS         | 2S        | 2015-05-21    | 2015-05-19    |           2 |
++--------------+---------+---------------------+--------+-------------+-----------+---------------+---------------+-------------+
+1 row in set (0.00 sec)
+
+(7) SELECT * FROM Trains
+    WHERE TrainName LIKE 'B%';
++---------+-------------------+
+| TrainNo | TrainName         |
++---------+-------------------+
+|     101 | Brindavan Express |
++---------+-------------------+
+1 row in set (0.00 sec)
+ 
+(8) SELECT BookingRefNo,
+    R.RouteID,
+    TrainName,
+    (SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) AS Origin,
+    (SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) AS Destination,
+    CoachCode, DateOfJourney, DateOfBooking, NoOfTickets
+    FROM Trains T INNER JOIN Bookings B INNER JOIN Routes R ON T.TrainNo = B.TrainNo AND B.RouteID = R.RouteID
+    WHERE DateOfBooking IS NOT NULL;
+
++--------------+---------+---------------------+--------+-------------+-----------+---------------+---------------+-------------+
+| BookingRefNo | RouteID | TrainName           | Origin | Destination | CoachCode | DateOfJourney | DateOfBooking | NoOfTickets |
++--------------+---------+---------------------+--------+-------------+-----------+---------------+---------------+-------------+
+|         2001 |     302 | Brindavan Express   | MAS    | BNC         | CC        | 2018-07-20    | 2018-07-11    |           2 |
+|         2002 |     305 | Shatabdi Express    | BNC    | MUM         | SL        | 2017-08-11    | 2017-07-22    |           3 |
+|         2003 |     308 | East-West Express   | KOLK   | MUM         | 1A        | 2014-03-08    | 2014-02-28    |           1 |
+|         2004 |     303 | North-South Express | DEL    | MAS         | CC        | 2016-09-14    | 2016-09-07    |           4 |
+|         2005 |     303 | North-South Express | DEL    | MAS         | 2S        | 2015-05-21    | 2015-05-19    |           2 |
++--------------+---------+---------------------+--------+-------------+-----------+---------------+---------------+-------------+
+5 rows in set (0.00 sec)
+
+(9) SELECT BookingRefNo,
+    R.RouteID,
+    TrainName,
+    (SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) AS Origin,
+    (SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) AS Destination,
+    CoachCode, DateOfJourney, DateOfBooking, NoOfTickets
+    FROM Trains T INNER JOIN Bookings B INNER JOIN Routes R ON T.TrainNo = B.TrainNo AND B.RouteID = R.RouteID
+    WHERE (DateOfBooking BETWEEN '2016-01-01' AND '2016-12-31') AND (DateOfJourney BETWEEN '2017-01-01' AND '2017-12-31');
+
+Empty set (0.00 sec)
+
+(10) SELECT TrainName, SUM(CoachCode) AS TotalCoaches
+     FROM Trains INNER JOIN TrainCoaches ON Trains.TrainNo = TrainCoaches.TrainNo
+     GROUP BY TrainName;
+
++---------------------+--------------+
+| TrainName           | TotalCoaches |
++---------------------+--------------+
+| Brindavan Express   |            3 |
+| Capital Mail        |            3 |
+| East-West Express   |            3 |
+| Guruvayur Express   |            3 |
+| Howrah Mail         |            3 |
+| North-South Express |            4 |
+| Rockfort Express    |            3 |
+| Shatabdi Express    |            4 |
+| Taj Mahal Express   |            3 |
++---------------------+--------------+
+9 rows in set (0.00 sec)
+
+(11) SELECT TrainName, COUNT(B.TrainNo) AS NumberOfBookings FROM Trains T INNER JOIN Bookings B ON T.TrainNo = B.TrainNo WHERE B.TrainNo = 106;
+
++---------------------+------------------+
+| TrainName           | NumberOfBookings |
++---------------------+------------------+
+| North-South Express |                2 |
++---------------------+------------------+
+1 row in set (0.01 sec)
+
+(12) SELECT TrainName, SUM(B.NoOfTickets) AS NumberOfTickets FROM Trains T INNER JOIN Bookings B ON T.TrainNo = B.TrainNo WHERE B.TrainNo = 106;
+
++---------------------+------------------+
+| TrainName           | NumberOfTickets  |
++---------------------+------------------+
+| North-South Express |                6 |
++---------------------+------------------+
+1 row in set (0.00 sec)
+
+
+(13) SELECT TRM.RouteID AS RouteID, TrainName,
+     	(SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) AS Origin,
+     	(SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) AS Destination,
+        ArrivalTime, DepartureTime, DistanceInKms, DurationInMins
+        FROM Trains T INNER JOIN TrainRouteMaps TRM INNER JOIN Routes R ON T.TrainNo = TRM.TrainNo AND TRM.RouteID = R.RouteID
+    WHERE DistanceInKms = (SELECT MIN(DistanceInKms) FROM Routes)
+    ORDER BY RouteID;
+
++---------+------------------+--------+-------------+-------------+---------------+---------------+----------------+
+| RouteID | TrainName        | Origin | Destination | ArrivalTime | DepartureTime | DistanceInKms | DurationInMins |
++---------+------------------+--------+-------------+-------------+---------------+---------------+----------------+
+|     305 | Shatabdi Express | BNC    | MUM         | 21:30:00    | 21:40:00      |           500 |            170 |
++---------+------------------+--------+-------------+-------------+---------------+---------------+----------------+
+1 row in set (0.01 sec)
+
+(14) SELECT TrainName, SUM(B.NoOfTickets) AS NumberOfTickets FROM Trains T INNER JOIN Bookings B ON T.TrainNo = B.TrainNo GROUP BY TrainName;
++---------------------+-----------------+
+| TrainName           | NumberOfTickets |
++---------------------+-----------------+
+| Brindavan Express   |               2 |
+| East-West Express   |               1 |
+| North-South Express |               6 |
+| Shatabdi Express    |               3 |
++---------------------+-----------------+
+4 rows in set (0.00 sec)
+
+(15) SELECT CoachCode, (50 * CostPerKm) AS CostForFiftyKm
+     FROM Coaches;
++-----------+----------------+
+| CoachCode | CostForFiftyKm |
++-----------+----------------+
+| 1A        |            500 |
+| 2A        |            400 |
+| 2S        |            100 |
+| CC        |            300 |
+| SL        |            200 |
++-----------+----------------+
+5 rows in set (0.00 sec)
+
+(16) SELECT TrainName, DepartureTime
+    FROM Trains T INNER JOIN TrainRouteMaps TRM INNER JOIN Routes R ON T.TrainNo = TRM.TrainNo AND TRM.RouteID = R.RouteID
+    WHERE (SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) = 'BNC';
++------------------+---------------+
+| TrainName        | DepartureTime |
++------------------+---------------+
+| Shatabdi Express | 21:40:00      |
++------------------+---------------+
+1 row in set (0.00 sec)
+
+(17 / 18)
+SELECT TrainName, SUM(NoOfTickets) AS TotalTicketsBooked 
+FROM Trains T INNER JOIN Bookings B ON T.TrainNo = B.TrainNo 
+GROUP BY TrainName 
+HAVING TotalTicketsBooked > 2;
+
++---------------------+--------------------+
+| TrainName           | TotalTicketsBooked |
++---------------------+--------------------+
+| North-South Express |                  6 |
+| Shatabdi Express    |                  3 |
++---------------------+--------------------+
+2 rows in set (0.00 sec)
+
+(19) 
+SELECT BookingRefNo, TrainName, 
+(SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) AS Origin, 
+(SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) AS Destination, CoachCode 
+FROM Trains T INNER JOIN Bookings B INNER JOIN Routes R ON T.TrainNo = B.TrainNo AND B.RouteID = R.RouteID 
+WHERE DateOfJourney > '2015-02-25';
+
++--------------+---------------------+--------+-------------+-----------+
+| BookingRefNo | TrainName           | Origin | Destination | CoachCode |
++--------------+---------------------+--------+-------------+-----------+
+|         2001 | Brindavan Express   | MAS    | BNC         | CC        |
+|         2002 | Shatabdi Express    | BNC    | MUM         | SL        |
+|         2004 | North-South Express | DEL    | MAS         | CC        |
+|         2005 | North-South Express | DEL    | MAS         | 2S        |
++--------------+---------------------+--------+-------------+-----------+
+4 rows in set (0.00 sec)
+
+(20) 
+SELECT TRM.RouteID AS RouteID, TrainName, ArrivalTime, DepartureTime, DistanceInKms, DurationInMins 
+FROM Trains T INNER JOIN TrainRouteMaps TRM INNER JOIN Routes R ON T.TrainNo = TRM.TrainNo AND TRM.RouteID = R.RouteID 
+WHERE 
+	(SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) = 'MAS' AND 
+	(SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) = 'BNC';
+
++---------+-------------------+-------------+---------------+---------------+----------------+
+| RouteID | TrainName         | ArrivalTime | DepartureTime | DistanceInKms | DurationInMins |
++---------+-------------------+-------------+---------------+---------------+----------------+
+|     302 | Brindavan Express | 10:00:00    | 10:20:00      |           700 |            200 |
++---------+-------------------+-------------+---------------+---------------+----------------+
+1 row in set (0.00 sec)
+
+(21)
+SELECT BookingRefNo,
+R.RouteID,
+TrainName,
+(SELECT StationCode FROM Stations S WHERE R.OriginStation = S.StationID) AS Origin,
+(SELECT StationCode FROM Stations S WHERE R.DestinationStation = S.StationID) AS Destination,
+CoachCode, DateOfJourney, DateOfBooking, NoOfTickets
+FROM Trains T INNER JOIN Bookings B INNER JOIN Routes R ON T.TrainNo = B.TrainNo AND B.RouteID = R.RouteID
+WHERE DateOfBooking <= CURDATE();
+
++--------------+---------+---------------------+--------+-------------+-----------+---------------+---------------+-------------+
+| BookingRefNo | RouteID | TrainName           | Origin | Destination | CoachCode | DateOfJourney | DateOfBooking | NoOfTickets |
++--------------+---------+---------------------+--------+-------------+-----------+---------------+---------------+-------------+
+|         2001 |     302 | Brindavan Express   | MAS    | BNC         | CC        | 2018-07-20    | 2018-07-11    |           2 |
+|         2002 |     305 | Shatabdi Express    | BNC    | MUM         | SL        | 2017-08-11    | 2017-07-22    |           3 |
+|         2003 |     308 | East-West Express   | KOLK   | MUM         | 1A        | 2014-03-08    | 2014-02-28    |           1 |
+|         2004 |     303 | North-South Express | DEL    | MAS         | CC        | 2016-09-14    | 2016-09-07    |           4 |
+|         2005 |     303 | North-South Express | DEL    | MAS         | 2S        | 2015-05-21    | 2015-05-19    |           2 |
++--------------+---------+---------------------+--------+-------------+-----------+---------------+---------------+-------------+
+5 rows in set (0.01 sec)
+
+

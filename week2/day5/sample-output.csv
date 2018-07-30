@@ -1,0 +1,2 @@
+Customer Id,Subscription Id,Invoice Id,Invoice Date,Start Date,Amount,Status,Paid On,Next Retry,Refunded Amount,Recurring,First Invoice,Tax Total,Customer Details
+Cust_001,Sub_001,Inv_001,5/25/2015 10:55:00,5/25/2015 10:55:00,10.25,Paid,5/25/2015 10:55:00,,5.6,TRUE,FALSE,1.25,"{""First Name"" : ""John"", ""Last Name"" : ""Doe"", ""Email"" : ""john@test.com"", ""Company"" : ""My BigCamp""}"

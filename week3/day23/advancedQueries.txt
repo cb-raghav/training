@@ -1,0 +1,229 @@
+(1) mysql> SELECT name FROM students
+    -> WHERE id NOT IN (
+    -> SELECT student_id FROM marks);
++-------------+
+| name        |
++-------------+
+| Quicksilver |
++-------------+
+1 row in set (0.01 sec)
+
+
+(2) mysql> SELECT name, year, SUM(IFNULL(annual, 0)) AS total_marks 
+	-> FROM students INNER JOIN marks ON students.id = marks.student_id 
+	-> GROUP BY name, year 
+	-> ORDER BY NULL;
++-----------+------+-------------+
+| name      | year | total_marks |
++-----------+------+-------------+
+| Thor      | 2003 |         424 |
+| Thor      | 2004 |         309 |
+| Thor      | 2005 |         375 |
+| Thor      | 2006 |         296 |
+| Thor      | 2007 |         212 |
+| Hulk      | 2003 |         296 |
+| Hulk      | 2004 |         463 |
+| Hulk      | 2005 |         295 |
+| Hulk      | 2006 |         218 |
+| Hulk      | 2007 |         429 |
+| Daredevil | 2003 |         465 |
+| Daredevil | 2004 |         319 |
+| Daredevil | 2005 |         385 |
+| Daredevil | 2006 |         318 |
+| Daredevil | 2007 |         306 |
+| X Man     | 2003 |         261 |
+| X Man     | 2004 |         307 |
+| X Man     | 2005 |         312 |
+| X Man     | 2006 |         287 |
+| X Man     | 2007 |         354 |
+| Ironman   | 2003 |         323 |
+| Ironman   | 2004 |         287 |
+| Ironman   | 2005 |         287 |
+| Ironman   | 2006 |         320 |
+| Ironman   | 2007 |         412 |
++-----------+------+-------------+
+25 rows in set (0.00 sec)
+
+
+(3) mysql> SELECT name, grade, SUM(IFNULL(quarterly, 0)) AS total_marks FROM students INNER JOIN marks ON students.id = marks.student_id WHERE year='2003' GROUP BY name, grade ORDER BY NULL;
++-----------+-------+-------------+
+| name      | grade | total_marks |
++-----------+-------+-------------+
+| Thor      |     6 |           0 |
+| Hulk      |     6 |         203 |
+| Daredevil |     6 |         428 |
+| X Man     |     6 |         300 |
+| Ironman   |     6 |         277 |
++-----------+-------+-------------+
+5 rows in set (0.01 sec)
+
+(4) mysql> SELECT name, COUNT(medal_won) AS no_of_medals, grade 
+	FROM students INNER JOIN medals ON students.id = medals.student_id 
+	WHERE grade IN ('9', '10')
+	GROUP BY student_id, grade 
+	HAVING COUNT(medal_won) >= 3;
++------+--------------+-------+
+| name | no_of_medals | grade |
++------+--------------+-------+
+| Thor |            3 |     8 |
+| Hulk |            3 |     7 |
++------+--------------+-------+
+2 rows in set (0.01 sec)
+
+(5) mysql> SELECT name, COUNT(medal_won) AS no_of_medals, IFNULL(grade, '-') as grade 
+	FROM students LEFT JOIN medals ON students.id = medals.student_id 
+	GROUP BY name, grade 
+	HAVING no_of_medals < 2 
+	ORDER BY no_of_medals DESC;
++-------------+--------------+-------+
+| name        | no_of_medals | grade |
++-------------+--------------+-------+
+| Hulk        |            1 | 6     |
+| Thor        |            1 | 6     |
+| Daredevil   |            1 | 8     |
+| X Man       |            0 | -     |
+| Quicksilver |            0 | -     |
+| Ironman     |            0 | -     |
++-------------+--------------+-------+
+
+(6) SELECT name AS student_name, year AS study_year, SUM(IF(annual >= 90, 1, 0)) AS topper_count, IFNULL(( 
+		SELECT COUNT(medal_won)  
+		FROM students LEFT JOIN medals ON students.id = medals.student_id 
+		WHERE name = student_name AND year = study_year 
+		GROUP BY name, year ), 0) AS medal_count 
+	FROM students INNER JOIN marks ON students.id = marks.student_id 
+	GROUP BY name, year 
+	HAVING topper_count = 5 AND medal_count = 0;
+
+Empty set (0.00 sec)
+
+(7) SELECT name, game_id, medal_won, year, grade
+    -> FROM students LEFT JOIN medals ON students.id = medals.student_id
+    -> WHERE student_id IN (
+    -> SELECT student_id FROM medals
+    -> GROUP BY student_id
+    -> HAVING COUNT(student_id) > 3 );
+
++-----------+---------+-----------+------+-------+
+| name      | game_id | medal_won | year | grade |
++-----------+---------+-----------+------+-------+
+| Daredevil |       5 | gold      | 2003 |     6 |
+| Thor      |       5 | silver    | 2003 |     6 |
+| Hulk      |       4 | silver    | 2003 |     6 |
+| Daredevil |       1 | gold      | 2003 |     6 |
+| Daredevil |       3 | bronze    | 2004 |     7 |
+| Daredevil |       4 | silver    | 2004 |     7 |
+| Hulk      |       2 | silver    | 2004 |     7 |
+| Hulk      |       4 | bronze    | 2004 |     7 |
+| Hulk      |       5 | gold      | 2004 |     7 |
+| Daredevil |       3 | bronze    | 2005 |     8 |
+| Thor      |       2 | gold      | 2005 |     8 |
+| Thor      |       3 | bronze    | 2005 |     8 |
+| Thor      |       4 | bronze    | 2005 |     8 |
++-----------+---------+-----------+------+-------+
+13 rows in set (0.01 sec)
+
+(8) SELECT name AS student_name, year AS study_year, (SUM(IFNULL(quarterly, 0)) / 5) AS quarterly_per, 
+	(SUM(IFNULL(half_yearly, 0)) / 5) AS half_yearly_per, (SUM(IFNULL(annual, 0)) / 5) AS annual_per, IFNULL( (
+		SELECT COUNT(medal_won) FROM students LEFT JOIN medals ON students.id = medals.student_id 
+		WHERE name = student_name AND year = study_year 
+		GROUP BY name, year
+		), 0) AS medals, grade 
+	FROM students INNER JOIN marks ON students.id = marks.student_id 
+	GROUP BY name, year;
++--------------+------------+---------------+-----------------+------------+--------+-------+
+| student_name | study_year | quarterly_per | half_yearly_per | annual_per | medals | grade |
++--------------+------------+---------------+-----------------+------------+--------+-------+
+| Daredevil    |       2003 |       85.6000 |         75.0000 |    93.0000 |      2 |     6 |
+| Daredevil    |       2004 |       64.8000 |         62.8000 |    63.8000 |      2 |     7 |
+| Daredevil    |       2005 |       66.8000 |         49.8000 |    77.0000 |      1 |     8 |
+| Daredevil    |       2006 |       81.0000 |         86.8000 |    63.6000 |      0 |     9 |
+| Daredevil    |       2007 |       79.8000 |         73.8000 |    61.2000 |      0 |    10 |
+| Hulk         |       2003 |       40.6000 |         51.4000 |    59.2000 |      1 |     6 |
+| Hulk         |       2004 |       64.8000 |         58.2000 |    92.6000 |      3 |     7 |
+| Hulk         |       2005 |       65.6000 |         54.8000 |    59.0000 |      0 |     8 |
+| Hulk         |       2006 |       73.8000 |         49.6000 |    43.6000 |      0 |     9 |
+| Hulk         |       2007 |       60.6000 |         54.0000 |    85.8000 |      0 |    10 |
+| Ironman      |       2003 |       55.4000 |         56.8000 |    64.6000 |      0 |     6 |
+| Ironman      |       2004 |       58.6000 |         55.4000 |    57.4000 |      0 |     7 |
+| Ironman      |       2005 |       51.0000 |         77.0000 |    57.4000 |      0 |     8 |
+| Ironman      |       2006 |       86.2000 |         68.8000 |    64.0000 |      0 |     9 |
+| Ironman      |       2007 |       74.2000 |         77.2000 |    82.4000 |      0 |    10 |
+| Thor         |       2003 |        0.0000 |         45.2000 |    84.8000 |      1 |     6 |
+| Thor         |       2004 |       47.2000 |         58.8000 |    61.8000 |      0 |     7 |
+| Thor         |       2005 |       66.8000 |         71.0000 |    75.0000 |      3 |     8 |
+| Thor         |       2006 |       57.6000 |         63.8000 |    59.2000 |      0 |     9 |
+| Thor         |       2007 |       60.2000 |         58.4000 |    42.4000 |      0 |    10 |
+| X Man        |       2003 |       60.0000 |         62.0000 |    52.2000 |      0 |     6 |
+| X Man        |       2004 |       75.6000 |         69.0000 |    61.4000 |      0 |     7 |
+| X Man        |       2005 |       74.8000 |         65.2000 |    62.4000 |      0 |     8 |
+| X Man        |       2006 |       76.2000 |         71.0000 |    57.4000 |      0 |     9 |
+| X Man        |       2007 |       56.6000 |         48.2000 |    70.8000 |      0 |    10 |
++--------------+------------+---------------+-----------------+------------+--------+-------+
+25 rows in set (0.00 sec)
+
+(9) SELECT name, year, grade, 
+    CASE 
+    	WHEN qtotal >= 450 THEN 'S'
+	   	WHEN qtotal >= 400 AND qtotal < 450 THEN 'A'
+	    WHEN qtotal >= 350 AND qtotal < 400 THEN 'B'
+	    WHEN qtotal >= 300 AND qtotal < 350 THEN 'C'
+	    WHEN qtotal >= 250 AND qtotal < 300 THEN 'D'
+	    WHEN qtotal >= 200 AND qtotal < 250 THEN 'E'
+    	ELSE 'F'
+    END AS quarterly_rating,
+    CASE
+	    WHEN htotal >= 450 THEN 'S'
+	    WHEN htotal >= 400 AND htotal < 450 THEN 'A'
+	    WHEN htotal >= 350 AND htotal < 400 THEN 'B'
+	    WHEN htotal >= 300 AND htotal < 350 THEN 'C'
+	    WHEN htotal >= 250 AND htotal < 300 THEN 'D'
+	    WHEN htotal >= 200 AND htotal < 250 THEN 'E'
+	    ELSE 'F'
+    END AS half_yearly_rating,
+    CASE
+	    WHEN atotal >= 450 THEN 'S'
+	    WHEN atotal >= 400 AND atotal < 450 THEN 'A'
+	    WHEN atotal >= 350 AND atotal < 400 THEN 'B'
+	    WHEN atotal >= 300 AND atotal < 350 THEN 'C'
+	    WHEN atotal >= 250 AND atotal < 300 THEN 'D'
+	    WHEN atotal >= 200 AND atotal < 250 THEN 'E'
+	    ELSE 'F'
+    END AS annual_rating
+    FROM (
+    	SELECT name, year, grade, SUM(IFNULL(quarterly, 0)) AS qtotal, SUM(IFNULL(half_yearly, 0)) AS htotal, SUM(IFNULL(annual, 0)) AS atotal
+    	FROM students INNER JOIN marks ON students.id = marks.student_id
+    	GROUP BY name, year
+    ) t;
+
++-----------+------+-------+------------------+--------------------+---------------+
+| name      | year | grade | quarterly_rating | half_yearly_rating | annual_rating |
++-----------+------+-------+------------------+--------------------+---------------+
+| Daredevil | 2003 |     6 | A                | B                  | S             |
+| Daredevil | 2004 |     7 | C                | C                  | C             |
+| Daredevil | 2005 |     8 | C                | E                  | B             |
+| Daredevil | 2006 |     9 | A                | A                  | C             |
+| Daredevil | 2007 |    10 | B                | B                  | C             |
+| Hulk      | 2003 |     6 | E                | D                  | D             |
+| Hulk      | 2004 |     7 | C                | D                  | S             |
+| Hulk      | 2005 |     8 | C                | D                  | D             |
+| Hulk      | 2006 |     9 | B                | E                  | E             |
+| Hulk      | 2007 |    10 | C                | D                  | A             |
+| Ironman   | 2003 |     6 | D                | D                  | C             |
+| Ironman   | 2004 |     7 | D                | D                  | D             |
+| Ironman   | 2005 |     8 | D                | B                  | D             |
+| Ironman   | 2006 |     9 | A                | C                  | C             |
+| Ironman   | 2007 |    10 | B                | B                  | A             |
+| Thor      | 2003 |     6 | F                | E                  | A             |
+| Thor      | 2004 |     7 | E                | D                  | C             |
+| Thor      | 2005 |     8 | C                | B                  | B             |
+| Thor      | 2006 |     9 | D                | C                  | D             |
+| Thor      | 2007 |    10 | C                | D                  | E             |
+| X Man     | 2003 |     6 | C                | C                  | D             |
+| X Man     | 2004 |     7 | B                | C                  | C             |
+| X Man     | 2005 |     8 | B                | C                  | C             |
+| X Man     | 2006 |     9 | B                | B                  | D             |
+| X Man     | 2007 |    10 | D                | E                  | B             |
++-----------+------+-------+------------------+--------------------+---------------+
+25 rows in set (0.01 sec)
+

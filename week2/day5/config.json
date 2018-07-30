@@ -1,0 +1,7 @@
+{
+	"inputDateFormat": "yyyy-MM-dd'T'hh:mm:ss.SSS'Z'",
+	"targetDateFormat": "M/dd/yyyy hh:mm:ss", 
+	"amountMultiplier": "0.01",
+	"refundMultiplier": "0.1",
+	"taxMultiplier": "0.01"
+}

@@ -1,0 +1,165 @@
+cb-raghav:~ raghav$ mysql -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 141
+Server version: 5.6.35 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2017, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> SHOW DATABASES
+    -> ;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| cb_qa              |
+| mysql              |
+| performance_schema |
+| service_station    |
+| test               |
++--------------------+
+6 rows in set (0.03 sec)
+
+mysql> USE service_station;
+Database changed
+mysql> CREATE TABLE ServiceStation (
+    -> StationID int,
+    -> StationName varchar(100),
+    -> StationAddress varchar(100),
+    -> StationContact varchar(10),
+    -> PRIMARY KEY (StationID)
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> CREATE TABLE Employees (
+    -> EmployeeID int,
+    -> EmployeeName varchar(100),
+    -> EmployeeAge int,
+    -> EmployeeContact varchar(10),
+    -> PRIMARY KEY (EmployeeID)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE Customers (
+    -> CustomerID int,
+    -> CustomerName varchar(100),
+    -> CustomerAge int,
+    -> CustomerContact varchar(10),
+    -> EmployeeID int,
+    -> PRIMARY KEY (CustomerID),
+    -> FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE Vehicles (
+    -> VehicleID int,
+    -> VehicleType ENUM('Car','Bike','Bus'),
+    -> VehicleBrand varchar(100),
+    -> VehicleColor varchar(20),
+    -> ServiceCharge int,
+    -> PRIMARY KEY (VehicleID)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE Invoices (
+    -> InvoiceID int,
+    -> OwnerName varchar(100),
+    -> Vehicle varchar(100),
+    -> TotalAmount int,
+    -> EmployeeAssigned varchar(100),
+    -> PRIMARY KEY (InvoiceID),
+    -> FOREIGN KEY (OwnerName) REFERENCES Customers(CustomerName),
+    -> FOREIGN KEY (EmployeeAssigned) REFERENCES Employees(EmployeeName)
+    -> );
+ERROR 1215 (HY000): Cannot add foreign key constraint
+mysql> CREATE TABLE Invoices (
+    ->     -> InvoiceID int,
+    ->     -> OwnerName varchar(100),
+    ->     -> Vehicle varchar(100),
+    ->     -> TotalAmount int,
+    -> l
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '-> InvoiceID int,
+    -> OwnerName varchar(100),
+    -> Vehicle varchar(100),
+  ' at line 2
+
+mysql> CREATE TABLE Invoices (
+    -> InvoiceID int,
+    -> OwnerName varchar(100),
+    -> Vehicle varchar(100),
+    -> TotalAmount int,
+    -> EmployeeAssigned varchar(100),
+    -> PRIMARY KEY (InvoiceID)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> DROP TABLE Invoices;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW TABLES;
++---------------------------+
+| Tables_in_service_station |
++---------------------------+
+| Customers                 |
+| Employees                 |
+| ServiceStation            |
+| Vehicles                  |
++---------------------------+
+4 rows in set (0.00 sec)
+
+mysql> DROP TABLE Vehicles;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW TABLES;
++---------------------------+
+| Tables_in_service_station |
++---------------------------+
+| Customers                 |
+| Employees                 |
+| ServiceStation            |
++---------------------------+
+3 rows in set (0.00 sec)
+
+mysql> DROP TABLE Customers;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DROP TABLE Employees;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW TABLES;
++---------------------------+
+| Tables_in_service_station |
++---------------------------+
+| ServiceStation            |
++---------------------------+
+1 row in set (0.00 sec)
+
+mysql> DROP TABLE ServiceStation;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SHOW TABLES;
+Empty set (0.00 sec)
+
+mysql> DROP DATABASE service_station;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| cb_qa              |
+| mysql              |
+| performance_schema |
+| test               |
++--------------------+
+5 rows in set (0.00 sec)
+
+mysql> 

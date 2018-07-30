@@ -1,0 +1,85 @@
+mysql> DESCRIBE Users;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| UserID   | int(11)     | NO   | PRI | 0       |       |
+| LoginID  | varchar(50) | YES  |     | NULL    |       |
+| Password | varchar(50) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> DESCRIBE Trains;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| TrainNo   | int(11)     | NO   | PRI | 0       |       |
+| TrainName | varchar(30) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> DESCRIBE Stations;
++-------------+------------+------+-----+---------+-------+
+| Field       | Type       | Null | Key | Default | Extra |
++-------------+------------+------+-----+---------+-------+
+| StationID   | int(11)    | NO   | PRI | 0       |       |
+| StationCode | varchar(5) | YES  |     | NULL    |       |
++-------------+------------+------+-----+---------+-------+
+2 rows in set (0.02 sec)
+
+mysql> DESCRIBE Routes;
++--------------------+---------+------+-----+---------+-------+
+| Field              | Type    | Null | Key | Default | Extra |
++--------------------+---------+------+-----+---------+-------+
+| RouteID            | int(11) | NO   | PRI | 0       |       |
+| OriginStation      | int(11) | YES  | MUL | NULL    |       |
+| DestinationStation | int(11) | YES  | MUL | NULL    |       |
+| DistanceInKms      | int(11) | YES  |     | NULL    |       |
++--------------------+---------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> DESCRIBE Coaches;
++-----------+------------+------+-----+---------+-------+
+| Field     | Type       | Null | Key | Default | Extra |
++-----------+------------+------+-----+---------+-------+
+| CoachCode | varchar(5) | NO   | PRI |         |       |
+| CostPerKm | int(11)    | YES  |     | NULL    |       |
++-----------+------------+------+-----+---------+-------+
+2 rows in set (0.02 sec)
+
+mysql> DESCRIBE TrainRouteMaps;
++----------------+---------+------+-----+---------+-------+
+| Field          | Type    | Null | Key | Default | Extra |
++----------------+---------+------+-----+---------+-------+
+| RouteID        | int(11) | NO   | PRI | 0       |       |
+| TrainNo        | int(11) | NO   | PRI | 0       |       |
+| ArrivalTime    | time    | YES  |     | NULL    |       |
+| DepartureTime  | time    | YES  |     | NULL    |       |
+| DurationInMins | int(11) | YES  |     | NULL    |       |
++----------------+---------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> DESCRIBE TrainCoaches;
++-----------+------------+------+-----+---------+-------+
+| Field     | Type       | Null | Key | Default | Extra |
++-----------+------------+------+-----+---------+-------+
+| TrainNo   | int(11)    | YES  | MUL | NULL    |       |
+| CoachCode | varchar(5) | YES  | MUL | NULL    |       |
+| NoOfSeats | int(11)    | YES  |     | NULL    |       |
++-----------+------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> DESCRIBE Bookings;
++---------------+------------+------+-----+---------+-------+
+| Field         | Type       | Null | Key | Default | Extra |
++---------------+------------+------+-----+---------+-------+
+| BookingRefNo  | int(11)    | NO   | PRI | 0       |       |
+| RouteID       | int(11)    | YES  | MUL | NULL    |       |
+| TrainNo       | int(11)    | YES  |     | NULL    |       |
+| CoachCode     | varchar(5) | YES  | MUL | NULL    |       |
+| DateOfJourney | date       | YES  |     | NULL    |       |
+| DateOfBooking | date       | YES  |     | NULL    |       |
+| NoOfTickets   | int(11)    | YES  |     | NULL    |       |
++---------------+------------+------+-----+---------+-------+
+7 rows in set (0.01 sec)
+
+mysql> 

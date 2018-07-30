@@ -1,0 +1,39 @@
+{
+	"directory": [
+		{
+			"Name": "Dharam Kumar",
+			"Address": "Prabha Wine Shop, G N Chetty Road, Chennai",
+			"Mobile Number": "099221 45665",
+			"Home Number": "",
+			"Work Number": ""
+		},
+		{
+			"Name": "Sokratis P",
+			"Address": "1A Viboothi Apartments, Habibullah Road, Chennai",
+			"Mobile Number": "098767 12343",
+			"Home Number": "044 48776543",
+			"Work Number": "1009 123 431"
+		},
+		{
+			"Name": "Ranti Martins",
+			"Address": "6 Lambeth Avenue, Bangalore",
+			"Mobile Number": "087684 30053",
+			"Home Number": "052 87665012",
+			"Work Number": "1465 900 100"
+		},
+		{
+			"Name": "Sohag Gazi",
+			"Address": "Ashburton Grove, Homsey Road, London",
+			"Mobile Number": "076991 04314",
+			"Home Number": "041 34556019",
+			"Work Number": "1098 234 567"
+		},
+		{
+			"Name": "Sokratis P",
+			"Address": "6 Vivekanandhar Theru, Dubai Kurukku Sandhu, Dubai Main Road, Dubai",
+			"Mobile Number": "096912 90043",
+			"Home Number": "044 7655 1232",
+			"Work Number": "1088 345 614"
+		}
+	]
+}
