@@ -1,0 +1,168 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<base href='http://vikku.info/programming/' />
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="content-language" content="en" />
+
+<title>Get Country State City Hierarchy - Get list of country, state, city using GeoNames</title>
+<meta name="keywords" content="geographic names, geonames hierarchy, world places list, world places hierarchy, list of country, list of city, list of state, geonames country/state/city list, geographical names list, geographical hierarchy, gennames hierarchy, geonames list, geoinformation, scripting world places" />
+<meta name="description" content="Get a hierarchy of country, state, city using geonames database. List by country and then list by state and then list all cities using geonames database. Get all places(geoinformation) using this code." />
+
+<meta property="fb:app_id" content="124948124275250"/>
+<meta property='og:title' content='Get Country State City Hierarchy - Get list of country, state, city using GeoNames' />
+<meta property='og:site_name' content='Jayapal Chandran Programming' />
+<meta property='og:url' content='http://vikku.info/programming/geodata/geonames-get-country-state-city-hierarchy.htm' />
+<meta property='og:type' content='article' />
+<meta property='og:image' content='http://vikku.info/programming/images/source-code.png' />
+<meta property='og:description' content="Get a hierarchy of country, state, city using geonames database. List by country and then list by state and then list all cities using geonames database. Get all places(geoinformation) using this code." />
+<meta property="fb:admin" content="595761942" />
+<meta property="fb:app_id" content="124948124275250" />
+
+<meta itemprop="name" content="Get Country State City Hierarchy - Get list of country, state, city using GeoNames" />
+<meta itemprop="description" content="Get a hierarchy of country, state, city using geonames database. List by country and then list by state and then list all cities using geonames database. Get all places(geoinformation) using this code." />
+<meta itemprop="image" content="http://vikku.info/programming/images/source-code.png" />
+
+<link rel='stylesheet' type='text/css' href='http://vikku.info/programming/css/pstyle.css'></link>
+<script type="text/javascript" src="http://vikku.info/programming/js/sh/shCore.js"></script>
+<script type="text/javascript" src="http://vikku.info/programming/js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="http://vikku.info/programming/js/sh/shBrushPhp.js"></script>
+<link type="text/css" rel="stylesheet" href="http://vikku.info/programming/js/sh/shCoreDefault.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+<body>
+
+<div class='main'>
+<style type="text/css">
+.contents { background-color:#EDF4F8; padding:10px; border:2px dashed #C2DAE7; width: 70%; margin: 0 auto; }
+.contents p span { display:block;float:left; margin-left:0px; width:110px; color:gray; font-weight:bold;}
+.contents p select {float:left; margin-left:90px;}
+.contents p {clear:both;overflow:hidden;}
+</style>
+
+<script type="text/javascript" src="js/geodata-jsr-class.js"></script>
+
+<h1>Get a list of country/state/city in a hierarchy using geonames webservice </h1>
+
+<div class='social_plugins'>
+<span class='st_fblike_hcount' displayText='Facebook Like'></span>
+<span class='st_facebook_hcount' displayText='Facebook'></span>
+<span class='st_linkedin_hcount' displayText='LinkedIn'></span>
+<span class='st_googleplus_hcount' displayText='Google +'></span>
+<span class='st_sharethis_hcount' displayText='ShareThis'></span>
+</div>
+
+<div>
+<p>Here you can get a hierarchy of places. Get place information like a tree structure. For example you can take north america, and in that you can pick united states. and from the list of states which will be 50 you can pick one state for which you will get a list of counties. and by selecting a county you will get a list of all the cities. Liks this you can do for any part of the world. But i couldn't get information as expected for australia. May be i did not understand the administrative levels of austraila. In the unites states it is state/county/city and in parts of europe it is province/region/city. The following works very well for United States and Europe. I have to test for other parts of the world. Below is the code explanation and references.</p>
+</div>
+
+
+<div class="contents">
+
+<p><span>Continent:</span> <select name="continent" id="continent" onchange="getplaces(this.value,'country');">
+<option value=""></option>						
+</select>
+</p>
+
+<p><span>Country:</span> <select name="country" id="country" onchange="getplaces(this.value,'province');">
+<option value=""></option>						
+</select>
+</p>
+
+<p><span>State / Provice:</span> <select name="province" id="province" onchange="getplaces(this.value,'region')">
+<option value=""></option>
+</select>
+</p>
+
+<p><span>County / Region:</span> <select name="region" id="region" onchange="getplaces(this.value,'city')">
+<option value=""></option>
+</select>
+</p>
+
+<p><span>City:</span> <select name="city" id="city">
+<option value=""></option></select>
+</p>
+</div>
+
+<div>
+  <p>Code sample will appear in a few days... Till that you can just copy this pages source code and you can use it. it is simple and straigh forward.</p>
+  <p><strong>Reference</strong><br />
+  <a target="_blank" href="http://www.geonames.org/export/place-hierarchy.html#children">http://www.geonames.org/export/place-hierarchy.html#children</a></p>
+</div>
+
+<script type="text/javascript">
+var whos=null;
+function getplaces(gid,src)
+{	
+	whos = src
+	
+//	var  request = "http://ws.geonames.org/childrenJSON?geonameId="+gid+"&callback=getLocation&style=long";
+	var request = "http://www.geonames.org/childrenJSON?geonameId="+gid+"&callback=listPlaces&style=long";
+	aObj = new JSONscriptRequest(request);
+	aObj.buildScriptTag();
+	aObj.addScriptTag();	
+}
+
+function listPlaces(jData)
+{
+	counts = jData.geonames.length<jData.totalResultsCount ? jData.geonames.length : jData.totalResultsCount
+	who = document.getElementById(whos)
+	who.options.length = 0;
+	
+	if(counts)who.options[who.options.length] = new Option('Select','')
+	else who.options[who.options.length] = new Option('No Data Available','NULL')
+			
+	for(var i=0;i<counts;i++)
+		who.options[who.options.length] = new Option(jData.geonames[i].name,jData.geonames[i].geonameId)
+
+	delete jData;
+	jData = null		
+}
+
+window.onload = function() { getplaces(6295630,'continent'); }
+</script>
+
+<!--http://gis.stackexchange.com/questions/603/is-a-country-state-city-database-available-->
+<!-- by line -->
+<p class='byline'>By <a rel="author" href="http://vikku.info/">Jayapal Chandran</a> - <a href="https://plus.google.com/102502150650702449749" rel='author'>Google+</a></p>
+
+<!-- facebook comments -->
+<div class='facebook-comments'>
+<a name="Comments"><h3>Comments, Suggestions, Objections, ...</h3></a>
+<div id="page">
+	<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=124948124275250";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<div id="fb-root"></div>
+<div class="fb-comments" data-href="http://vikku.info/programming/geodata/geonames-get-country-state-city-hierarchy.htm" data-num-posts="100"  data-width="800"></div>
+</div>
+</div>
+<!-- end facebook comments -->
+
+</div>
+<!-- end div main -->
+
+<script type="text/javascript">var switchTo5x=true;</script>
+<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+<script type="text/javascript">stLight.options({publisher: "d5d04ed8-04d1-4c39-9336-46d4c4ce9d65", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+
+<!-- Google Analytics -->
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-5776689-2");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+</body>
+</html>

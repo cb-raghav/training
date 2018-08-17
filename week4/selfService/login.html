@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <title>Login</title>
+        <style>
+            ::placeholder {
+                color: silver;
+            }
+            
+            .input-container {
+                
+            }
+
+            div#form {
+                /*
+                position: absolute;
+                margin: auto;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                width: 300px;
+                height: 340px;
+                display: block;
+                */
+                
+                position: absolute;
+                width: 300px;
+                height: 350px;
+                top: 50%;
+                left: 50%;
+                margin: -175px 0 0 -150px;    
+                
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                text-align: center;
+                background-color: #f2f2f2;
+                padding: 0px 0px;
+                //padding: 10px 3px 0px 3px;
+            }
+            
+            div#form-header {
+                line-height: 0.5;
+            }
+            
+            div#form-footer {
+                position: absolute;
+                top: 80%; right: 0%; bottom: 0%; left: 0%;
+                
+                display: block;
+                background-color: #9999ff;
+                border: 2px solid #9999ff;
+                border-radius: 4px;
+                padding: 5px 0px;
+            }
+            
+            input[type=email], input[type=password] {
+                width: 80%;
+                padding: 12px 8px;
+                margin: 8px 0px;
+                display: inline-block;
+                border: none;
+                background: transparent;
+                border-bottom: 1px solid #000000;
+                box-sizing: border-box;
+            }
+            
+            input[type=email]:focus, input[type=password]:focus {
+                outline: none;
+                background: transparent;
+                border: none;
+                border-bottom: 2px solid #000000;
+            }
+            
+
+            input[type=submit] {
+                width: 50%;
+                margin: 0 auto;
+                background-color: #ff8080;
+                color: white;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                border-radius: 2px;
+                cursor: pointer;
+            }
+            
+            a {
+                color: white;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id='form'>
+            <div id="form-header">
+                <h2>Self-Service Portal</h2>
+                <h4>Login</h4>
+            </div>    
+            <form action="LoginHandler" method="GET">
+                <input type="email" name="email" placeholder="Email"><br>
+                <input type="password" name="password" placeholder="Password"><br>
+                <input type="submit" value="LOGIN"><br>
+            </form>	
+            <div id="form-footer">
+                <br>
+                <a href="index.html">New around here?</a>
+                <br><br>
+            </div>
+        </div>
+    </body>
+
+</html>

@@ -30,27 +30,45 @@ public class EmployeeExample {
 			opt = s.nextInt();
 			switch(opt) {
 				case 1: { // Sort by employee name
-					Arrays.sort(empList, new Comparator<Employee>() { // Anonymous inner class implementation of the Comparator interface
+					// Anonymous inner class implementation of the Comparator interface
+					/*
+					Arrays.sort(empList, new Comparator<Employee>() { 
 						public int compare(Employee e1, Employee e2) {
             				return (e1.getName()).compareTo(e2.getName()); // sort by employee name
         				}
 					});
+					*/
+
+					// Using lambdas 
+					Arrays.sort(empList, (Employee e1, Employee e2) -> e1.getName().compareTo(e2.getName()));
 				}
 				break;
 				case 2: {
-					Arrays.sort(empList, new Comparator<Employee>() { // Anonymous inner class implementation of the Comparator interface
+					// Anonymous inner class implementation of the Comparator interface
+					/*
+					Arrays.sort(empList, new Comparator<Employee>() { 
 						public int compare(Employee e1, Employee e2) {
             				return (e1.getAge() - e2.getAge()); // sort by employee age
         				}
 					});
+					*/
+
+					// Using lambdas 
+					Arrays.sort(empList, (Employee e1, Employee e2) -> e1.getAge() - e2.getAge());
 				}
 				break;
 				case 3: {
-					Arrays.sort(empList, new Comparator<Employee>() { // Anonymous inner class implementation of the Comparator interface
+					// Anonymous inner class implementation of the Comparator interface
+					/*
+					Arrays.sort(empList, new Comparator<Employee>() { 
 						public int compare(Employee e1, Employee e2) {
             				return (int)(e1.getSalary() - e2.getSalary()); // sort by employee salary
         				}
 					});
+					*/
+					
+					// Using lambdas 
+					Arrays.sort(empList, (Employee e1, Employee e2) -> (new Double(e1.getSalary() - e2.getSalary())).intValue());			
 				}
 				break;
 			}

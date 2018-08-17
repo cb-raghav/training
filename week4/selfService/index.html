@@ -1,0 +1,35 @@
+<html>
+
+    <style>
+        ::placeholder {
+            color: silver;
+        }
+    </style>
+
+    <head>
+        <title>Self Service Portal - Register</title>
+    </head>
+
+    <body>
+        <div align='center'>
+            <h2>Register for the Self Service Portal</h2>
+
+            <form action="RegisterHandler" method="GET">
+                <input type="text" name="firstName" placeholder="First name">
+                &nbsp;&nbsp;&nbsp;
+                <input type="text" name="lastName" placeholder="Last name"><br>
+                <input type="text" name="email" placeholder="Email">
+                &nbsp;&nbsp;&nbsp;
+                <input type="text" name="emailConfirm" placeholder="Confirm email"><br>
+                <input type="password" name="password" placeholder="Password">
+                &nbsp;&nbsp;&nbsp;
+                <input type="password" name="passwordConfirm" placeholder="Confirm password"><br>
+                <br>
+                <input type="submit" value="Create account">
+                <br>
+                <a href="login.html">Have an account already? Log in!</a>
+            </form>	
+        </div>
+    </body>
+
+</html>

@@ -1,0 +1,73 @@
+<web-app>  
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <servlet>
+        <servlet-name>RegisterHandler</servlet-name>
+        <servlet-class>RegisterHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegisterHandler</servlet-name>
+        <url-pattern>/RegisterHandler</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LoginHandler</servlet-name>
+        <servlet-class>LoginHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginHandler</servlet-name>
+        <url-pattern>/LoginHandler</url-pattern>
+    </servlet-mapping>
+	
+    <servlet>
+        <servlet-name>UpdateHandler</servlet-name>
+        <servlet-class>UpdateHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateHandler</servlet-name>
+        <url-pattern>/UpdateHandler</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LogoutHandler</servlet-name>
+        <servlet-class>LogoutHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutHandler</servlet-name>
+        <url-pattern>/LogoutHandler</url-pattern>
+    </servlet-mapping>
+        
+    <servlet>
+        <servlet-name>DeactivateHandler</servlet-name>
+        <servlet-class>DeactivateHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeactivateHandler</servlet-name>
+        <url-pattern>/DeactivateHandler</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ReactivateHandler</servlet-name>
+        <servlet-class>ReactivateHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReactivateHandler</servlet-name>
+        <url-pattern>/ReactivateHandler</url-pattern>
+    </servlet-mapping>
+        
+    <servlet>
+        <servlet-name>DropdownListener</servlet-name>
+        <servlet-class>DropdownListener</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DropdownListener</servlet-name>
+        <url-pattern>/DropdownListener</url-pattern>
+    </servlet-mapping>
+</web-app>

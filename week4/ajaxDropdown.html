@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+            	var teams = {
+                    "Arsenal" : ["Leno", "Cech", "Ospina"],
+                    "United" : ["de Gea", "Romero", "Valdes"]
+                };
+                $('<option disabled selected>').text("Pick a team").appendTo($("#teams"));
+            	$.each(teams, function (key, value) {
+                	//alert(key + ":" + value);
+                	$('<option>').text(key).appendTo($('#teams')); 
+                });
+                $('#teams').change(function (event) {  
+                    var team = $("#teams").val();
+                    var $captains = $('#captains');
+                    var obj = {
+                        "Arsenal": ["Ramsey", "Xhaka", "Ozil"],
+                        "United": ["Hazard", "Morata", "Alonso"]
+                    };
+                    $.each(obj, function (key, value) {
+                        var arr = value;
+                        if (key == team) {
+                            $captains.empty();
+                            $.each(arr, function (index, value) {
+                                $('<option>').text(value).appendTo($('select#captains')); 
+                            });
+                        }
+                    });
+                });
+                $('#but1').click(function (event) {
+                    var teamChosen = $('#teams').val();
+                    var captainChosen = $('#captains').val();
+                    $("#para1").text(teamChosen + ", " + captainChosen);
+                });
+            });          
+        </script>
+    </head>
+    <body>
+
+        Dropdown 1:
+        <select id="teams">
+            
+        </select>
+        <br>
+        Dropdown 2:
+        <select id="captains">
+
+        </select>
+        <br>
+        <button id="but1">Find captain</button>
+
+        <p id="para1">Sample paragraph</p>
+
+    </body>
+</html>
