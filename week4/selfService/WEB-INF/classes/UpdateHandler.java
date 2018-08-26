@@ -11,19 +11,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import dao.DaoImp;
+import util.UtilFunctions;
 
 public class UpdateHandler extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // JDBC driver name and database URL
-        final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-        final String DB_URL = "jdbc:mysql://localhost:3306/self_service";
-        // Database credentials
-        final String USER = "root";
-        final String PASS = "";
-
-        
         // Fetch the input values from request
         String email = request.getParameter("email");
         String firstName = request.getParameter("firstName");
@@ -41,9 +34,35 @@ public class UpdateHandler extends HttpServlet {
         List of validations:
         1. All fields shouldn't be empty or null
         2. Email should have right format (regex)
-        boolean eFlag = false, pFlag = false;        
         */
-
+        boolean emailFlag = false, fnFlag = false, lnFlag = false;
+        boolean addrFlag1 = false, addrFlag2 = false;
+        boolean cityFlag = false, zipFlag = false;
+        boolean countryFlag = false, stateFlag = false;
+        
+        emailFlag = !UtilFunctions.isNullEmpty(email);
+        fnFlag = !UtilFunctions.isNullEmpty(firstName);
+        lnFlag = !UtilFunctions.isNullEmpty(lastName);
+        addrFlag1 = !UtilFunctions.isNullEmpty(addr1);
+        addrFlag2 = !UtilFunctions.isNullEmpty(addr2);
+        cityFlag = !UtilFunctions.isNullEmpty(city);
+        zipFlag = !UtilFunctions.isNullEmpty(zip);
+        countryFlag = !UtilFunctions.isNullEmpty(country);
+        stateFlag = !UtilFunctions.isNullEmpty(state);
+        boolean flag = (emailFlag && fnFlag && lnFlag && addrFlag1 
+                && addrFlag2 && cityFlag && zipFlag && countryFlag && stateFlag);
+        
+        boolean emailPattern = false;
+        String emailRegex = "^[\\w-]+(?:\\.[\\w-]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,7}$";
+        emailPattern = UtilFunctions.matchRegex(email, emailRegex);
+        
+        if(flag && emailPattern) {
+            inputValid = true;
+        }
+        else {
+            inputValid = false;
+        }
+        
         String resultMsg = ""; String targetPage = "";
         if (inputValid) {
             String updateSQL = "UPDATE Users SET fname = ?, lname = ?, address = ? WHERE email = ?";
@@ -54,6 +73,11 @@ public class UpdateHandler extends HttpServlet {
             targetPage = "welcome.jsp";
             RequestDispatcher rd = request.getRequestDispatcher(targetPage);
             rd.forward(request, response);
+        }
+        else {
+            String queryString = "invalidInput=true";
+            targetPage = ("edit.jsp?" + queryString);
+            response.sendRedirect(targetPage);
         }
     }
 

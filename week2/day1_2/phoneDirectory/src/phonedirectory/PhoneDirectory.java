@@ -20,7 +20,7 @@ import org.json.JSONTokener;
 public class PhoneDirectory {
 
     static String[][] input = new String[5][5];
-    static Map<String, List< Map<String, String>>> directory = new HashMap<>();
+    static Map<String, List<ContactDetails> > directory = new HashMap<>();
     static Map<String, String> owners = new LinkedHashMap<>();
 
     public static void sampleData() {
@@ -67,7 +67,7 @@ public class PhoneDirectory {
 
     public static void loadFromJson() throws FileNotFoundException, JSONException {
         String userHome = System.getProperty("user.home"); // returns "/Users/raghav"
-        JSONTokener jsonTokener = new JSONTokener(new FileReader(userHome + "/source/training/week2/day12/inputData.json"));
+        JSONTokener jsonTokener = new JSONTokener(new FileReader(userHome + "/source/training/week2/day1_2/inputData.json"));
         JSONObject jsonObject = new JSONObject(jsonTokener);
         JSONArray directory = jsonObject.getJSONArray("directory");
 
@@ -84,7 +84,7 @@ public class PhoneDirectory {
 
     public static void loadFromCsv() throws FileNotFoundException, IOException {
         String userHome = System.getProperty("user.home"); // returns "/Users/raghav"
-        File inputCSV = new File(userHome + "/source/training/week2/day12/inputData.csv");
+        File inputCSV = new File(userHome + "/source/training/week2/day1_2/inputData.csv");
         BufferedReader br = new BufferedReader(new FileReader(inputCSV));
         String line;
         int lnum = 0;
@@ -108,50 +108,42 @@ public class PhoneDirectory {
     public static void storeInputData(String name, String address, String mobileNum,
             String homeNum, String workNum) {
         // store the input data in collections for efficient retrieval
-        Map<String, String> details = new LinkedHashMap<String, String>();
-        details.put(address, "Address");
-        details.put(mobileNum, "Mobile Number");
-        details.put(homeNum, "Home Number");
-        details.put(workNum, "Work Number");
-
+        ContactDetails cd = new ContactDetails(address, mobileNum, homeNum, workNum);
         owners.put(mobileNum.replace(" ", ""), name);
         owners.put(homeNum.replace(" ", ""), name);
         owners.put(workNum.replace(" ", ""), name);
-
-        if (directory.get(name) != null) { // the directory already has entries for this name
-            // fetch the existing list of details for this name
-            List< Map<String, String>> listDetails = directory.get(name);
-
-            listDetails.add(details); // add the fresh entry to the list
-            directory.put(name, listDetails); // update the directory
-
-        } else { // create a fresh directory entry for this name
-            // initialise a list that can store details
-            List< Map<String, String>> listDetails = new ArrayList< Map<String, String>>();
-
-            listDetails.add(details); // add the fresh entry to the newly created list
-            directory.put(name, listDetails); // update the directory
+        
+        List<ContactDetails> listDetails = null;
+        if(directory.get(name) != null) { // the directory already has entries for this name
+            listDetails = directory.get(name); // fetch the existing list of details for this name
         }
+        else { // create a fresh directory entry for this name
+            listDetails = new ArrayList<>(); // initialise a list that can store details
+        }
+        listDetails.add(cd); // add the fresh entry to the list
+        directory.put(name, listDetails); // update the directory
     }
 
     public static void queryName(String searchName) {
         boolean found = false;
         searchName = searchName.toLowerCase(); // for case-insensitive search
+        
         // search the directory for full / partial matches to the search term
-        for (Entry< String, List< Map<String, String>>> entry : directory.entrySet()) {
+        for (Entry< String, List<ContactDetails> > entry : directory.entrySet()) {
             String name = entry.getKey();
             String nameWithoutCase = name.toLowerCase();
             if (nameWithoutCase.startsWith(searchName)) { // match(es) found
                 found = true;
-                List< Map<String, String>> listDetails = entry.getValue();
+                List<ContactDetails> listDetails = entry.getValue();
 
                 // display the details of all persons having this name
                 for (int i = 0; i < listDetails.size(); i++) {
+                    ContactDetails cd = listDetails.get(i);
                     System.out.println("\nName: " + name);
-                    Map<String, String> details = listDetails.get(i);
-                    for (Entry<String, String> e : details.entrySet()) {
-                        System.out.println(e.getValue() + ": " + e.getKey());
-                    }
+                    System.out.println("Address: " + cd.getAddress());
+                    System.out.println("Mobile Number: " + cd.getMobileNum());
+                    System.out.println("Home Number: " + cd.getHomeNum());
+                    System.out.println("Work Number: " + cd.getWorkNum());
                 }
             }
         }
@@ -160,35 +152,38 @@ public class PhoneDirectory {
         }
     }
 
+    
     public static void queryNumber(String searchNumber) {
         searchNumber = searchNumber.replace(" ", ""); // trim the spaces
+        String searchName = owners.get(searchNumber);
         // get the name of the person that this number belongs to
-        if (owners.get(searchNumber) != null) { // match found
-            String searchName = owners.get(searchNumber);
-            List< Map<String, String>> listDetails = directory.get(searchName);
+        if (searchName != null) { // match found
+            List<ContactDetails> listDetails = directory.get(searchName);
             boolean found = false;
-            Map<String, String> requiredDetails = new LinkedHashMap<String, String>();
+            ContactDetails requiredDetails = null;
 
             for (int i = 0; i < listDetails.size() && !found; i++) {
-                Map<String, String> details = listDetails.get(i);
-                for (Entry<String, String> e : details.entrySet()) {
-                    String key = e.getKey();
-                    key = key.replace(" ", ""); // trim the spaces
-                    if (key.equals(searchNumber)) { // match found
-                        requiredDetails = details;
-                        found = true;
-                    }
+                ContactDetails cd = listDetails.get(i);
+                String mobileNum = cd.getMobileNum().replace(" ", "");
+                String homeNum = cd.getHomeNum().replace(" ", "");
+                String workNum = cd.getWorkNum().replace(" ", "");
+                if(searchNumber.equals(mobileNum)
+                    || searchNumber.equals(homeNum)
+                    || searchNumber.equals(workNum)) {
+                    requiredDetails = cd;
+                    found = true;
                 }
             }
 
             // display the details of the match
             System.out.println("\nName: " + searchName);
-            for (Entry<String, String> e : requiredDetails.entrySet()) {
-                System.out.println(e.getValue() + ": " + e.getKey());
-            }
+            System.out.println("Address: " + requiredDetails.getAddress());
+            System.out.println("Mobile Number: " + requiredDetails.getMobileNum());
+            System.out.println("Home Number: " + requiredDetails.getHomeNum());
+            System.out.println("Work Number: " + requiredDetails.getWorkNum());
         } else {
             System.out.println("\nNo matching entries found for the phone number entered!");
-        }
+        }  
     }
 
     public static void main(String[] args) throws FileNotFoundException, JSONException, IOException {

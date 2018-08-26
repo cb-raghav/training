@@ -9,6 +9,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import dao.DaoImp;
+import util.UtilFunctions;
 
 public class LoginHandler extends HttpServlet {      
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {  
@@ -22,9 +23,26 @@ public class LoginHandler extends HttpServlet {
         /*
         List of validations:
         1. All fields shouldn't be empty or null
-        2. Email should have right format (regex)
-        boolean eFlag = false, pFlag = false;        
+        2. Email should have right format (regex)   
         */
+        
+        boolean eFlag = false, pFlag = false;
+        eFlag = !UtilFunctions.isNullEmpty(email);
+        pFlag = !UtilFunctions.isNullEmpty(password);
+        boolean flag = (eFlag && pFlag);
+        
+        boolean emailPattern = false, pwdPattern = false;
+        String emailRegex = "^[\\w-]+(?:\\.[\\w-]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,7}$";
+        String pwdRegex = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s).*$";
+        emailPattern = UtilFunctions.matchRegex(email, emailRegex);
+        pwdPattern = UtilFunctions.matchRegex(password, pwdRegex);
+        
+        if(flag && emailPattern && pwdPattern) {
+            inputValid = true;
+        }
+        else {
+            inputValid = false;
+        }
         
         PrintWriter out = response.getWriter();
         String resultMsg = ""; String targetPage = "";

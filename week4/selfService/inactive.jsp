@@ -1,4 +1,29 @@
 <html>
+    <head>
+        <title>Inactive</title>
+        
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            
+            div#details {
+                text-align: center;
+            }
+            
+            input[type=submit] {
+                width: 20%;
+                background-color: #ff8080;
+                color: white;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                border-radius: 2px;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    
     <body>
         <jsp:include page="link-bar.jsp" />
         

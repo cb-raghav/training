@@ -1,6 +1,5 @@
 import java.io.*;
 import javax.servlet.*;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import dao.DaoImp;
 
@@ -9,7 +8,6 @@ public class ReactivateHandler extends HttpServlet {
             throws ServletException, IOException {  
         HttpSession session = request.getSession(false);
         String email = (String) session.getAttribute("email");
-        
         String updateSQL = "UPDATE Users SET active = ? WHERE email = ?";
         String[] parameters = {"1", email};
         DaoImp.update(updateSQL, parameters);

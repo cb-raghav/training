@@ -29,7 +29,7 @@ public class DropdownListener extends HttpServlet {  // JDK 1.6 and above only
                 "Victoria", "ACT", "South Australia");
 
         locations.put("India", indianStates);
-        locations.put("United States of America", americanStates);
+        locations.put("USA", americanStates);
         locations.put("England", englishStates);
         locations.put("Australia", australianStates);
 

@@ -1,34 +1,158 @@
 <html>
-
-    <style>
-        ::placeholder {
-            color: silver;
-        }
-    </style>
-
     <head>
-        <title>Self Service Portal - Register</title>
+        <title>Register</title>
+        
+        <link rel="stylesheet" 
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        
+        <style>
+            ::placeholder {
+                color: silver;
+            }
+            
+            body {font-family: Arial, Helvetica, sans-serif;}
+
+            div#form {
+                position: absolute;
+                width: 450px;
+                height: 350px;
+                top: 50%;
+                left: 50%;
+                margin: -175px 0 0 -200px;    
+
+                border: transparent;
+                text-align: center;
+                // background-color: #f2f2f2;
+                padding: 0px 0px;
+                //padding: 10px 3px 0px 3px;
+            }
+            
+            div#form-header {
+                line-height: 0.2;
+            }
+
+            .input-container {
+                display: flex;
+                width: 100%;
+                padding: 0px 0px 0px 0px;
+            }
+
+            .icon {
+                padding: 12px 0px 0px 0px;
+                background: #ff8080;
+                color: white;
+                min-width: 40px;
+            }
+
+            .input-field {
+                width: 100%;
+                padding: 12px 8px;
+            }
+
+            .input-field:focus {
+                outline: none;
+                background: transparent;
+                border: none;
+                border-bottom: 2px solid #000000;
+            }
+
+            input[type=submit] {
+                width: 30%;
+                background-color: #ff8080;
+                color: white;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                border-radius: 2px;
+                cursor: pointer;
+            }
+
+            a {
+                font-size: 12px;
+                color: black;
+            }
+        </style>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+        <script>
+            $(document).ready(function() {
+                $('#registerForm').submit(function() {
+                    //alert("Test244");
+                    var email = $('#email').val();
+                    var emailConfirm = $('#emailConfirm').val();
+                    //alert(email + ", " + emailConfirm);
+
+                    var password = $('#password').val();
+                    var passwordConfirm = $('#passwordConfirm').val();
+                    //alert(password + ", " + passwordConfirm);
+
+                    if(email != emailConfirm) {
+                        alert("ERROR: the email IDs do not match!");
+                        return false;
+                    }
+                    else if(password != passwordConfirm) {
+                        alert("ERROR: the passwords do not match!");
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                });
+            });
+        </script>
     </head>
 
     <body>
-        <div align='center'>
-            <h2>Register for the Self Service Portal</h2>
-
-            <form action="RegisterHandler" method="GET">
-                <input type="text" name="firstName" placeholder="First name">
-                &nbsp;&nbsp;&nbsp;
-                <input type="text" name="lastName" placeholder="Last name"><br>
-                <input type="text" name="email" placeholder="Email">
-                &nbsp;&nbsp;&nbsp;
-                <input type="text" name="emailConfirm" placeholder="Confirm email"><br>
-                <input type="password" name="password" placeholder="Password">
-                &nbsp;&nbsp;&nbsp;
-                <input type="password" name="passwordConfirm" placeholder="Confirm password"><br>
+        <div id="form">
+            <div id="form-header">
+                <h2>Self Service Portal</h2>
+                <h4 style = "font-size: 15px">REGISTER</h4>
+            </div>
+            <br>
+            <form action="RegisterHandler" method="GET" id="registerForm">
+                <div class="input-container">
+                    <i class="fa fa-user icon"></i>
+                    <input class="input-field" type="text" name="firstName" placeholder="First name" required>
+                    &nbsp;&nbsp;&nbsp;
+                    <i class="fa fa-user icon"></i>
+                    <input class="input-field" type="text" name="lastName" placeholder="Last name" required>
+                </div>
                 <br>
-                <input type="submit" value="Create account">
+                <div class="input-container">
+                    <i class="fa fa-envelope icon"></i>
+                    <input class="input-field" type="text" name="email" id="email"
+                        placeholder="Email" 
+                        pattern="^[\w-]+(?:\.[\w-]+)*@(?:[\w-]+\.)+[a-zA-Z]{2,7}$"
+                        title="The email address entered is invalid!"
+                        required>
+                    &nbsp;&nbsp;&nbsp;
+                    <i class="fa fa-envelope icon"></i>
+                    <input class="input-field" type="text" name="emailConfirm" id="emailConfirm"
+                        placeholder="Confirm email" 
+                        pattern="^[\w-]+(?:\.[\w-]+)*@(?:[\w-]+\.)+[a-zA-Z]{2,7}$"
+                        title="The email address entered is invalid!"  
+                        required>
+                </div>
                 <br>
-                <a href="login.html">Have an account already? Log in!</a>
+                <div class="input-container">
+                    <i class="fa fa-key icon"></i>
+                    <input class="input-field" type="password" name="password" id="password"
+                        placeholder="Password" 
+                        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" 
+                        title="Password should contain at least 1 uppercase character, 1 lowercase character, and 1 number!"   
+                        required>
+                    &nbsp;&nbsp;&nbsp;
+                    <i class="fa fa-key icon"></i>
+                    <input class="input-field" type="password" name="passwordConfirm" id="passwordConfirm" 
+                        placeholder="Confirm password" 
+                        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" 
+                        title="Password should contain at least 1 uppercase character, 1 lowercase character, and 1 number!" 
+                        required><br>
+                </div>
+                <br>
+                <input type="submit" value="Create account" id="submit"><br>
             </form>	
+            <a href="login.html">Have an account already? Log in!</a> 
         </div>
     </body>
 

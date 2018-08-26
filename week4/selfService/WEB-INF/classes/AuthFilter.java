@@ -74,61 +74,11 @@ public class AuthFilter implements Filter {
             HashMap<String, Object> row = result.get(0);
             active = (String) row.get("active");
             session.setAttribute("active", active);
-            /*
-            Connection conn = null;
-            PreparedStatement preparedStatement = null;
-            ResultSet rs = null;
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                String url = "jdbc:mysql://localhost:3306/self_service";
-                String username = "root";
-                String password = "";
-                conn = DriverManager.getConnection(url, username, password);
-
-                String query = "SELECT * FROM Users WHERE email = ?";
-                preparedStatement = conn.prepareStatement(query);
-                preparedStatement.setString(1, email);
-
-                rs = preparedStatement.executeQuery();
-                while (rs.next()) {
-                    active = rs.getString("active");
-                    session.setAttribute("active", active);
-                }
-            } catch (SQLException se) {
-                // Handle errors for JDBC
-                se.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                //finally block used to close resources
-                if (rs != null) {
-                    try {
-                        rs.close();
-                    } catch (SQLException ex) {
-                        //
-                    }
-                }
-                if (preparedStatement != null) {
-                    try {
-                        preparedStatement.close();
-                    } catch (SQLException ex) {
-                        //ex.printStackTrace();
-                    }
-                }
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException ex) {
-                        //ex.printStackTrace();
-                    }
-                }
-            }
-            */
             accountActive = active.equals("1");
             
             if(cookiesValid) {
                 if(accountActive) {
-                    if(uri.endsWith("login.html")) {
+                    if(uri.endsWith("login.html") || uri.endsWith("inactive.jsp")) {
                         resp.sendRedirect("welcome.jsp");
                     }
                     else {

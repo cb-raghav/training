@@ -44,7 +44,7 @@ public class DaoImp {
                 preparedStatement.setString((i + 1), parameters[i]);
             }
             
-            System.out.println("The query being executed is: " + preparedStatement.toString());
+            //System.out.println("The query being executed is: " + preparedStatement.toString());
             rs = preparedStatement.executeQuery(); // execute the prepared statement
             result = convertResultSetToList(rs);
         } catch (SQLException se) {
@@ -79,7 +79,8 @@ public class DaoImp {
         return result;
     }
     
-    public static void update(String query, String[] parameters) {
+    public static String update(String query, String[] parameters) {
+        String result = "";
         Connection conn = null;
         PreparedStatement preparedStatement = null;
         boolean matchFound = false;
@@ -92,14 +93,14 @@ public class DaoImp {
                 preparedStatement.setString((i + 1), parameters[i]);
             }
             
-            System.out.println("The query being executed is: " + preparedStatement.toString());
+            //System.out.println("The query being executed is: " + preparedStatement.toString());
             preparedStatement.executeUpdate(); // execute the prepared statement
-        } catch (SQLException se) {
-            // Handle errors for JDBC
-            se.printStackTrace();
-        } catch (Exception e) {
-            // Handle errors for Class.forName
-            e.printStackTrace();
+            result = "SUCCESS!";
+        } catch (SQLException se) { // Handle errors for JDBC
+            //se.printStackTrace();
+            result = se.toString();
+        } catch (Exception e) { // Handle errors for Class.forName
+            //e.printStackTrace();
         } finally {
             //finally block used to close resources
             if (preparedStatement != null) {
@@ -117,5 +118,6 @@ public class DaoImp {
                 }
             }
         }
+        return result;
     }
 }
